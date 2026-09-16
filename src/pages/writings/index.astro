@@ -1,40 +1,27 @@
 ---
-import { getCollection } from "astro:content";
+import PostList from "../../components/PostList.astro";
 import Layout from "../../layouts/Layout.astro";
+import { publishedPosts } from "../../utils/content";
 
-const writings = await getCollection("writings", ({ data }) => !data.draft);
-writings.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const writings = await publishedPosts("writings");
 ---
 
-<Layout title="散文 — MyWorld" description="随笔、散文、碎片。">
+<Layout title="碎碎念 — MyWorld" description="随笔、散文、碎片。">
   <section class="section">
     <div class="container">
-      <h1 class="page-title">散文</h1>
-      <p class="page-desc">随手写下的东西，不一定是完整的，但一定是真实的。</p>
-      <div class="post-list">
-        {writings.length > 0 ? (
-          writings.map((w) => (
-            <article class="post-item">
-              <time>{w.data.date.toLocaleDateString("zh-CN")}</time>
-              <h2><a href={import.meta.env.BASE_URL === "/" ? "/writings/" + w.slug : import.meta.env.BASE_URL + "/writings/" + w.slug}>{w.data.title}</a></h2>
-              <p>{w.data.description}</p>
-            </article>
-          ))
-        ) : (
-          <div class="empty">还没有散文，但钢笔已经准备好了。</div>
-        )}
+      <h1 class="page-title">碎碎念</h1>
+      <div class="page-intro">
+        <p>为什么我们渴望别人理解？</p>
+        <p>因为我们在孤独中感到恐惧和无助</p>
       </div>
+      <PostList posts={writings} section="writings" empty="还没有文章哦。" />
     </div>
   </section>
 </Layout>
 
 <style>
-  .section { padding: 80px 0; }
-  .page-title { font-size: 2.5rem; margin-bottom: 8px; }
-  .page-desc { color: var(--text-muted); margin-bottom: 48px; }
-  .post-list { display: flex; flex-direction: column; gap: 32px; }
-  .post-item time { font-size: 0.8rem; color: var(--text-muted); }
-  .post-item h2 { font-size: 1.3rem; margin: 4px 0; }
-  .post-item p { color: var(--text-muted); font-size: 0.95rem; }
-  .empty { color: var(--text-muted); font-style: italic; }
+  .page-intro {
+    color: var(--text-muted);
+    margin-bottom: 48px;
+  }
 </style>

@@ -1,0 +1,448 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { withBase } from "../../../utils/url";
+---
+
+<Layout title="算卦 — MyWorld" description="三枚硬币，六次摇掷，得本卦与变卦。">
+  <section class="section">
+    <div class="container">
+      <a class="back" href={withBase("/tools/divination")}>← 占卜</a>
+      <h1 class="page-title">算卦</h1>
+      <p class="page-desc">
+        三枚硬币摇六次，自下而上成一卦。老阴、老阳为变爻——有变爻时，本卦会变为另一卦，
+        两卦并参，是六爻断卦的传统方法。
+      </p>
+
+      <div class="panel" id="panel">
+        <div class="stage" id="stage-intro">
+          <p class="hint">静心默想所问之事，然后开始摇卦。</p>
+          <button id="start" class="btn-primary">开始摇卦</button>
+        </div>
+
+        <div class="stage" id="stage-cast" hidden>
+          <div class="cast-head">
+            <span class="round">第 <b id="round-no">1</b> / 6 爻</span>
+            <span class="round-note">自下而上</span>
+          </div>
+          <div class="coins" id="coins" aria-live="polite">
+            <span class="coin"></span><span class="coin"></span><span class="coin"></span>
+          </div>
+          <p class="cast-result" id="cast-result">—</p>
+          <button id="toss" class="btn-primary">摇卦</button>
+
+          <ol class="lines" id="lines">
+            {
+              [6, 5, 4, 3, 2, 1].map((pos) => (
+                <li class="line" data-pos={pos}>
+                  <span class="line-name">{pos === 6 ? "上" : pos === 1 ? "初" : pos}</span>
+                  <span class="line-draw" data-draw=""></span>
+                  <span class="line-mark" data-mark=""></span>
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+
+        <div class="stage" id="stage-result" hidden></div>
+      </div>
+
+      <p class="note">
+        六爻之法以「重」（三背）为老阳、「交」（三字）为老阴。四种爻的概率并不均等：
+        老阴、老阳各 1/8，少阳、少阴各 3/8。所以变爻并不常见，出现时尤须细看。
+      </p>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .back {
+    display: inline-block;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+  }
+
+  .stage .hint {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+
+  .cast-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  .cast-head b {
+    color: var(--accent);
+    font-size: 1.1rem;
+  }
+
+  .coins {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin: 24px 0 16px;
+  }
+
+  .coin {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    font-family: monospace;
+    transition: border-color 0.2s, color 0.2s;
+  }
+
+  .coin.heads {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .cast-result {
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--accent);
+    min-height: 1.6em;
+    margin-bottom: 24px;
+  }
+
+  /* ---- 六爻图示（自上而下显示，故用列反向） ---- */
+  .lines {
+    list-style: none;
+    padding: 0;
+    margin: 28px 0 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .line {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 220px;
+  }
+
+  .line-name {
+    width: 28px;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-align: right;
+  }
+
+  .line-draw {
+    flex: 1;
+    height: 10px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .line-draw[data-draw=""] {
+    visibility: hidden;
+  }
+
+  .line-draw[data-draw="yang"]::before {
+    content: "";
+    flex: 1;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .line-draw[data-draw="yin"]::before,
+  .line-draw[data-draw="yin"]::after {
+    content: "";
+    flex: 1;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+
+  .line-mark {
+    width: 32px;
+    font-size: 0.72rem;
+    color: #f59e0b;
+  }
+
+  /* ---- 结果 ---- */
+  :global(.result-head) {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  :global(.hex-name) {
+    font-size: 2rem;
+    margin-bottom: 4px;
+  }
+
+  :global(.hex-sub) {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-family: monospace;
+    letter-spacing: 0.05em;
+  }
+
+  :global(.hex-figure) {
+    font-size: 2.4rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+    margin: 12px 0;
+  }
+
+  :global(.block) {
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    margin-top: 20px;
+  }
+
+  :global(.block) h3 {
+    font-size: 0.95rem;
+    color: var(--accent);
+    margin-bottom: 10px;
+  }
+
+  :global(.judgment) {
+    color: var(--text);
+    line-height: 1.9;
+    margin-bottom: 8px;
+  }
+
+  :global(.gist) {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.8;
+  }
+
+  :global(.trigrams) {
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+  }
+
+  :global(.trigrams) b {
+    color: var(--text);
+  }
+
+  :global(.changing-list) {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.9;
+  }
+
+  :global(.arrow) {
+    text-align: center;
+    color: var(--accent);
+    font-size: 1.4rem;
+    margin: 8px 0;
+  }
+
+  .note {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+
+  :global(.again) {
+    margin-top: 24px;
+  }
+
+  @media (max-width: 480px) {
+    .panel {
+      padding: 24px 18px;
+    }
+    .coin {
+      width: 46px;
+      height: 46px;
+    }
+    .line {
+      width: 100%;
+    }
+  }
+</style>
+
+<script>
+  import { tossThreeCoins, buildResult, coinLabel, type Line } from "../../../utils/liuyao.ts";
+  import { TRIGRAM_INFO } from "../../../data/hexagrams.ts";
+
+  const startBtn = document.getElementById("start") as HTMLButtonElement;
+  const tossBtn = document.getElementById("toss") as HTMLButtonElement;
+  const stageIntro = document.getElementById("stage-intro") as HTMLElement;
+  const stageCast = document.getElementById("stage-cast") as HTMLElement;
+  const stageResult = document.getElementById("stage-result") as HTMLElement;
+  const roundNo = document.getElementById("round-no") as HTMLElement;
+  const coinEls = [...document.querySelectorAll<HTMLElement>("#coins .coin")];
+  const castResult = document.getElementById("cast-result") as HTMLElement;
+
+  let lines: Line[] = [];
+  let tossing = false;
+
+  function lineKind(line: Line): string {
+    if (line.yang) return line.changing ? "老阳（变爻）" : "少阳";
+    return line.changing ? "老阴（变爻）" : "少阴";
+  }
+
+  function paintLines() {
+    // 只更新已经摇出的爻。
+    document.querySelectorAll<HTMLElement>(".line").forEach((el) => {
+      const pos = Number(el.dataset.pos);
+      const line = lines[pos - 1];
+      const draw = el.querySelector<HTMLElement>(".line-draw")!;
+      const mark = el.querySelector<HTMLElement>(".line-mark")!;
+      if (!line) {
+        draw.dataset.draw = "";
+        mark.textContent = "";
+        return;
+      }
+      draw.dataset.draw = line.yang ? "yang" : "yin";
+      mark.textContent = line.changing ? (line.yang ? "○ 老阳" : "× 老阴") : "";
+    });
+  }
+
+  function reset() {
+    lines = [];
+    tossing = false;
+    coinEls.forEach((c) => {
+      c.classList.remove("heads");
+      c.textContent = "";
+    });
+    castResult.textContent = "—";
+    roundNo.textContent = "1";
+    paintLines();
+  }
+
+  startBtn.addEventListener("click", () => {
+    reset();
+    stageIntro.hidden = true;
+    stageCast.hidden = false;
+    stageResult.hidden = true;
+  });
+
+  tossBtn.addEventListener("click", () => {
+    if (tossing || lines.length >= 6) return;
+    tossing = true;
+    tossBtn.disabled = true;
+
+    // 短暂动画：硬币依次停定。
+    let i = 0;
+    const spin = setInterval(() => {
+      coinEls.forEach((c) => {
+        c.textContent = Math.random() < 0.5 ? "字" : "背";
+        c.classList.toggle("heads", Math.random() < 0.5);
+      });
+      if (++i > 4) {
+        clearInterval(spin);
+        finishToss();
+      }
+    }, 70);
+  });
+
+  function finishToss() {
+    // 一次摇掷同时决定「显示的三枚硬币」与「这一爻」——两者必须来自同一次结果。
+    const { line, coins } = tossThreeCoins();
+    lines.push(line);
+
+    coinEls.forEach((el, i) => {
+      el.textContent = coinLabel(coins[i]);
+      el.classList.toggle("heads", coins[i]);
+    });
+    castResult.textContent = `第 ${lines.length} 爻：${lineKind(line)}`;
+    paintLines();
+
+    roundNo.textContent = String(Math.min(lines.length + 1, 6));
+    tossing = false;
+    tossBtn.disabled = false;
+
+    if (lines.length === 6) {
+      tossBtn.hidden = true;
+      showResult(buildResult(lines));
+    }
+  }
+
+  function trigramLine(upper: string, lower: string): string {
+    return `${TRIGRAM_INFO[upper as keyof typeof TRIGRAM_INFO].symbol} ${upper} / ${TRIGRAM_INFO[lower as keyof typeof TRIGRAM_INFO].symbol} ${lower}`;
+  }
+
+  function block(title: string, inner: string): string {
+    return `<div class="block"><h3>${title}</h3>${inner}</div>`;
+  }
+
+  function hexBlock(label: string, hex: { number: number; name: string; upper: string; lower: string; judgment: string; gist: string; palace: string }, changing: number[]): string {
+    const changingText = changing.length
+      ? `<p class="changing-list">变爻：第 ${changing.join("、")} 爻</p>`
+      : "";
+    return (
+      `<div class="block"><h3>${label}</h3>` +
+      `<p class="judgment">${hex.judgment}</p>` +
+      `<p class="gist">${hex.gist}</p>` +
+      changingText +
+      `<div class="trigrams" style="margin-top:12px">` +
+      `<span>卦序 <b>${hex.number}</b></span>` +
+      `<span>${trigramLine(hex.upper, hex.lower)}</span>` +
+      `<span>${hex.palace}宫</span>` +
+      `</div></div>`
+    );
+  }
+
+  function showResult(result: ReturnType<typeof buildResult>) {
+    const p = result.primary;
+    let html = `<div class="result-head">`;
+    html += `<div class="hex-name">${p.name}</div>`;
+    html += `<div class="hex-sub">第 ${p.number} 卦 · ${p.palace}宫</div>`;
+    html += `<div class="hex-figure">${TRIGRAM_INFO[p.upper as keyof typeof TRIGRAM_INFO].symbol}${TRIGRAM_INFO[p.lower as keyof typeof TRIGRAM_INFO].symbol}</div>`;
+    if (result.transformed) {
+      html += `<div class="hex-sub">本卦 → 变卦：${p.name} 之 ${result.transformed.name}</div>`;
+    }
+    html += `</div>`;
+
+    html += hexBlock("本卦", p, result.changingPositions);
+
+    if (result.transformed) {
+      const t = result.transformed;
+      html += `<div class="arrow">↓</div>`;
+      html += hexBlock("变卦", t, []);
+      html += block(
+        "断卦提示",
+        `<p class="gist">有变爻时，事态正在转变。本卦说的是当下的处境，变卦说的是它将要走向的样子。` +
+          `变爻越多，变动的力量越强；只一两爻变，则那几爻是事情的关口。</p>`,
+      );
+    } else {
+      html += block(
+        "断卦提示",
+        `<p class="gist">六爻皆静，没有变爻——这说明事情的状态比较稳定，` +
+          `按本卦所示行事即可，不必急于求变。</p>`,
+      );
+    }
+
+    html += `<div class="again"><button id="again" class="btn-primary">再摇一次</button></div>`;
+    stageResult.innerHTML = html;
+    stageCast.hidden = true;
+    stageResult.hidden = false;
+
+    document.getElementById("again")!.addEventListener("click", () => {
+      reset();
+      tossBtn.hidden = false;
+      stageResult.hidden = true;
+      stageCast.hidden = false;
+    });
+    stageResult.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+</script>

@@ -1,0 +1,88 @@
+{
+  "domains": [
+    {
+      "code": "N",
+      "name": "神经质",
+      "facets": ["N1", "N2", "N3", "N4", "N5", "N6"],
+      "scoreRange": { "min": 24, "max": 120 },
+      "description": "反映情绪稳定性与对压力的敏感程度。高分表示更容易体验焦虑、愤怒、抑郁等负面情绪。"
+    },
+    {
+      "code": "E",
+      "name": "外向性",
+      "facets": ["E1", "E2", "E3", "E4", "E5", "E6"],
+      "scoreRange": { "min": 24, "max": 120 },
+      "description": "反映社交活跃度、自信与积极情绪。高分表示更喜欢社交、果断、精力充沛。"
+    },
+    {
+      "code": "O",
+      "name": "开放性",
+      "facets": ["O1", "O2", "O3", "O4", "O5", "O6"],
+      "scoreRange": { "min": 24, "max": 120 },
+      "description": "反映想象力、审美、求知欲与对新事物的接受程度。高分表示更开放、好奇、喜欢变化。"
+    },
+    {
+      "code": "A",
+      "name": "宜人性",
+      "facets": ["A1", "A2", "A3", "A4", "A5", "A6"],
+      "scoreRange": { "min": 24, "max": 120 },
+      "description": "反映信任、利他、合作与谦逊程度。高分表示更友善、乐于助人、愿意妥协。"
+    },
+    {
+      "code": "C",
+      "name": "尽责性",
+      "facets": ["C1", "C2", "C3", "C4", "C5", "C6"],
+      "scoreRange": { "min": 24, "max": 120 },
+      "description": "反映自律、条理、责任感与成就动机。高分表示更有计划、可靠、努力。"
+    }
+  ],
+  "facets": [
+    { "code": "N1", "name": "焦虑", "domain": "N", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "N2", "name": "愤怒", "domain": "N", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "N3", "name": "抑郁", "domain": "N", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "N4", "name": "自我意识", "domain": "N", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "N5", "name": "放纵", "domain": "N", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "N6", "name": "脆弱性", "domain": "N", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "E1", "name": "友好", "domain": "E", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "E2", "name": "合群性", "domain": "E", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "E3", "name": "自信", "domain": "E", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "E4", "name": "活跃度", "domain": "E", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "E5", "name": "寻求刺激", "domain": "E", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "E6", "name": "愉快", "domain": "E", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "O1", "name": "想象力", "domain": "O", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "O2", "name": "艺术兴趣", "domain": "O", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "O3", "name": "情感丰富", "domain": "O", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "O4", "name": "爱冒险", "domain": "O", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "O5", "name": "智力", "domain": "O", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "O6", "name": "开放倾向", "domain": "O", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "A1", "name": "信任", "domain": "A", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "A2", "name": "道德感", "domain": "A", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "A3", "name": "利他性", "domain": "A", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "A4", "name": "合作性", "domain": "A", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "A5", "name": "谦逊", "domain": "A", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "A6", "name": "同情心", "domain": "A", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "C1", "name": "自我效能", "domain": "C", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "C2", "name": "有序性", "domain": "C", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "C3", "name": "尽责", "domain": "C", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "C4", "name": "成就追求", "domain": "C", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "C5", "name": "自律", "domain": "C", "scoreRange": { "min": 4, "max": 20 } },
+    { "code": "C6", "name": "谨慎", "domain": "C", "scoreRange": { "min": 4, "max": 20 } }
+  ],
+  "scoring": {
+    "reverseFormula": "6 - rawScore",
+    "domainScore": "sum of its 6 facet scores",
+    "facetScore": "sum of its 4 question scores after reverse handling",
+    "presentation": {
+      "rawScore": true,
+      "percentile": true,
+      "level": true
+    },
+    "levels": [
+      { "label": "很低", "minPercentile": 0, "maxPercentile": 10 },
+      { "label": "较低", "minPercentile": 11, "maxPercentile": 30 },
+      { "label": "中等", "minPercentile": 31, "maxPercentile": 70 },
+      { "label": "较高", "minPercentile": 71, "maxPercentile": 90 },
+      { "label": "很高", "minPercentile": 91, "maxPercentile": 100 }
+    ]
+  }
+}

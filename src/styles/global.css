@@ -39,6 +39,11 @@ a:hover {
   color: var(--accent-glow);
 }
 
+/* Guarantees the `hidden` attribute wins over any later `display` rule. */
+[hidden] {
+  display: none !important;
+}
+
 h1, h2, h3 {
   line-height: 1.2;
   letter-spacing: -0.02em;
@@ -72,6 +77,59 @@ h1, h2, h3 {
   max-width: 760px;
   margin: 0 auto;
   padding: 0 24px;
+}
+
+/* ---- Page header ----
+   Structural, so it lives globally instead of being restated in each page's
+   scoped style block. */
+.section {
+  padding: 80px 0;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.page-desc {
+  color: var(--text-muted);
+  margin-bottom: 48px;
+}
+
+/* ---- Buttons ----
+   Global on purpose: Astro's scoped <style> only reaches elements present in
+   the template, so buttons injected later via innerHTML would lose their
+   styling. Keeping these unscoped makes both cases identical. */
+.btn-primary,
+.btn-secondary {
+  display: inline-block;
+  padding: 12px 32px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  border-radius: 100px;
+  color: var(--accent);
+  font-size: 0.95rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.25s, color 0.25s;
+}
+
+.btn-primary:hover,
+.btn-secondary:hover {
+  background: var(--accent);
+  color: #0a0a0f;
+}
+
+.btn-primary:disabled,
+.btn-secondary:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.btn-primary:disabled:hover,
+.btn-secondary:disabled:hover {
+  background: transparent;
+  color: var(--accent);
 }
 
 /* ---- Scrollbar ---- */

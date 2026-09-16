@@ -1,0 +1,92 @@
+---
+import { shortDate } from "../utils/format";
+import { withBase } from "../utils/url";
+
+type Props = {
+  /** Newest published entries across all post collections. */
+  posts: {
+    id: string;
+    type: "blog" | "writings";
+    data: { date: Date; title: string; description?: string };
+  }[];
+}
+
+const { posts } = Astro.props;
+
+const TYPE_LABEL: Record<string, string> = {
+  blog: "博客",
+  writings: "碎碎念",
+};
+---
+
+<div class="card-grid">
+  {
+    posts.length > 0 ? (
+      posts.map((post) => (
+        <article class="card">
+          <time>{shortDate(post.data.date)}</time>
+          <span class="card-type">{TYPE_LABEL[post.type] ?? post.type}</span>
+          <h3>
+            <a href={withBase(`/${post.type}/${post.id}`)}>{post.data.title}</a>
+          </h3>
+          <p>{post.data.description || ""}</p>
+        </article>
+      ))
+    ) : (
+      <article class="card">
+        <time>Coming soon</time>
+        <h3>还没有文章</h3>
+        <p>一些想法正在酝酿中。</p>
+      </article>
+    )
+  }
+</div>
+
+<style>
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .card:hover {
+    border-color: var(--accent-glow);
+    transform: translateY(-2px);
+  }
+
+  .card time {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .card-type {
+    display: inline-block;
+    font-size: 0.65rem;
+    padding: 2px 8px;
+    border-radius: 100px;
+    background: rgba(124, 58, 237, 0.12);
+    color: var(--accent);
+    margin-left: 8px;
+    vertical-align: middle;
+    letter-spacing: 0.05em;
+  }
+
+  .card h3 {
+    margin: 8px 0;
+    font-size: 1.1rem;
+  }
+
+  .card p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+</style>

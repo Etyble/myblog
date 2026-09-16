@@ -1,0 +1,35 @@
+---
+/** Rendered Markdown body styling, shared by both article routes. */
+---
+
+<div class="prose">
+  <slot />
+</div>
+
+<style>
+  .prose {
+    color: var(--text-muted);
+    line-height: 1.9;
+    font-size: 1rem;
+    max-width: 640px;
+  }
+
+  .prose :global(p) {
+    margin-bottom: 1.2em;
+  }
+
+  .prose :global(h2) {
+    font-size: 1.3rem;
+    color: var(--text);
+    margin: 2em 0 0.8em;
+  }
+
+  .prose :global(strong) {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .prose :global(a) {
+    color: var(--accent);
+  }
+</style>

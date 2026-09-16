@@ -1,0 +1,233 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { withBase } from "../../../utils/url";
+---
+
+<Layout title="抽签 — MyWorld" description="日式神签，七档吉凶，歌意解签。">
+  <section class="section">
+    <div class="container">
+      <a class="back" href={withBase("/tools/divination")}>← 占卜</a>
+      <h1 class="page-title">抽签</h1>
+      <p class="page-desc">
+        日式神签（おみくじ）。吉凶共七档，签诗为和歌，另附分项运势。
+        摇一摇签筒，看看这一次是什么。
+      </p>
+
+      <div class="panel">
+        <div class="stage" id="stage-intro">
+          <div class="tube" aria-hidden="true">
+            <span class="stick"></span><span class="stick"></span><span class="stick"></span>
+            <span class="stick"></span><span class="stick"></span><span class="stick"></span>
+            <span class="stick"></span>
+          </div>
+          <p class="hint">心中默念所问之事，然后抽签。</p>
+          <button id="draw" class="btn-primary">抽签</button>
+        </div>
+
+        <div class="stage" id="stage-result" hidden></div>
+      </div>
+
+      <p class="note">
+        传统上吉约七成、凶约三成（伝・元三大師所定之比），浅草寺至今仍守此例。
+        本签依此比例，故抽到凶并不罕见——旧说抽到凶反而要留下来，因为「凶」是提醒，不是定论。
+      </p>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .back {
+    display: inline-block;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+
+  .tube {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 5px;
+    height: 88px;
+    margin-bottom: 24px;
+  }
+
+  .stick {
+    width: 8px;
+    height: 62px;
+    background: var(--border);
+    border-radius: 3px 3px 0 0;
+    display: block;
+  }
+
+  .stick:nth-child(2n) { height: 72px; }
+  .stick:nth-child(3n) { height: 56px; }
+
+  .hint {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+
+  /* ---- 签纸 ---- */
+  :global(.slip) {
+    max-width: 520px;
+    margin: 0 auto;
+    text-align: left;
+  }
+
+  :global(.rank) {
+    text-align: center;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+
+  :global(.rank-kanji) {
+    font-size: 3.4rem;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: 0.06em;
+  }
+
+  :global(.rank-yomi) {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 0.22em;
+    margin-top: 4px;
+  }
+
+  :global(.rank-zh) {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 12px;
+    line-height: 1.8;
+  }
+
+  :global(.tone-great) :global(.rank-kanji) { color: #f59e0b; }
+  :global(.tone-good) :global(.rank-kanji) { color: var(--accent); }
+  :global(.tone-fair) :global(.rank-kanji) { color: #60a5fa; }
+  :global(.tone-warn) :global(.rank-kanji) { color: #ef4444; }
+
+  :global(.verse) {
+    text-align: center;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    background: var(--bg);
+    margin-bottom: 24px;
+  }
+
+  :global(.verse-kana) {
+    font-size: 1.15rem;
+    letter-spacing: 0.08em;
+    line-height: 1.9;
+    margin-bottom: 10px;
+  }
+
+  :global(.verse-reading) {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    letter-spacing: 0.05em;
+    margin-bottom: 16px;
+  }
+
+  :global(.verse-meaning) {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.9;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+  }
+
+  :global(.cats) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+
+  :global(.cat) {
+    border-left: 2px solid var(--border);
+    padding-left: 14px;
+  }
+
+  :global(.cat) b {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  :global(.cat) span {
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  :global(.again) {
+    text-align: center;
+    margin-top: 28px;
+  }
+
+  .note {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+
+  @media (max-width: 480px) {
+    .panel { padding: 24px 18px; }
+    :global(.rank-kanji) { font-size: 2.6rem; }
+  }
+</style>
+
+<script>
+  import { drawFortune, CATEGORIES } from "../../../data/omikuji.ts";
+
+  const drawBtn = document.getElementById("draw") as HTMLButtonElement;
+  const stageIntro = document.getElementById("stage-intro") as HTMLElement;
+  const stageResult = document.getElementById("stage-result") as HTMLElement;
+
+  function render() {
+    const level = drawFortune();
+    const cats = CATEGORIES.map(
+      (c) =>
+        `<div class="cat"><b>${c.label}</b><span>${c.readings[level.tone]}</span></div>`,
+    ).join("");
+
+    stageResult.innerHTML =
+      `<div class="slip tone-${level.tone}">` +
+      `<div class="rank">` +
+      `<div class="rank-kanji">${level.kanji}</div>` +
+      `<span class="rank-yomi">${level.yomi}</span>` +
+      `<p class="rank-zh">${level.zh}</p>` +
+      `</div>` +
+      `<div class="verse">` +
+      `<div class="verse-kana">${level.verse.kana}</div>` +
+      `<div class="verse-reading">${level.verse.reading}</div>` +
+      `<div class="verse-meaning">${level.verse.meaning}</div>` +
+      `</div>` +
+      `<div class="cats">${cats}</div>` +
+      `</div>` +
+      `<div class="again"><button id="again" class="btn-primary">再抽一次</button></div>`;
+
+    stageIntro.hidden = true;
+    stageResult.hidden = false;
+
+    document.getElementById("again")!.addEventListener("click", () => {
+      render();
+      stageResult.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  }
+
+  drawBtn.addEventListener("click", render);
+</script>

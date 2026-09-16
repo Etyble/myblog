@@ -1,13 +1,9 @@
 ---
-import { getCollection } from "astro:content";
+import LatestCards from "../components/LatestCards.astro";
 import Layout from "../layouts/Layout.astro";
+import { latestPosts } from "../utils/content";
 
-const blogPosts = await getCollection("blog", ({ data }) => !data.draft);
-const writings = await getCollection("writings", ({ data }) => !data.draft);
-
-const allPosts = [...blogPosts.map(p => ({ ...p, type: "blog" })), ...writings.map(w => ({ ...w, type: "writings" }))];
-allPosts.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-const latest = allPosts.slice(0, 4);
+const latest = await latestPosts(4);
 ---
 
 <Layout>
@@ -65,27 +61,7 @@ const latest = allPosts.slice(0, 4);
   <section class="section">
     <div class="container">
       <h2>Latest</h2>
-      <div class="card-grid">
-        {latest.length > 0 ? (
-          latest.map((post) => {
-            const url = (import.meta.env.BASE_URL === "/" ? "/" : import.meta.env.BASE_URL + "/") + post.type + "/" + post.slug;
-            return (
-              <article class="card">
-                <time>{post.data.date.toLocaleDateString("zh-CN")}</time>
-                <span class="card-type">{post.type === "blog" ? "博客" : "碎碎念"}</span>
-                <h3><a href={url}>{post.data.title}</a></h3>
-                <p>{post.data.description || ""}</p>
-              </article>
-            );
-          })
-        ) : (
-          <article class="card">
-            <time>Coming soon</time>
-            <h3>还没有文章</h3>
-            <p>一些想法正在酝酿中。</p>
-          </article>
-        )}
-      </div>
+      <LatestCards posts={latest} />
     </div>
   </section>
 </Layout>
@@ -200,53 +176,6 @@ const latest = allPosts.slice(0, 4);
   .section h2 {
     font-size: 1.5rem;
     margin-bottom: 32px;
-  }
-
-  .card-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-  }
-
-  .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    transition: border-color 0.3s, transform 0.3s;
-  }
-
-  .card:hover {
-    border-color: var(--accent-glow);
-    transform: translateY(-2px);
-  }
-
-  .card time {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-  }
-
-  .card-type {
-    display: inline-block;
-    font-size: 0.65rem;
-    padding: 2px 8px;
-    border-radius: 100px;
-    background: rgba(124, 58, 237, 0.12);
-    color: var(--accent);
-    margin-left: 8px;
-    vertical-align: middle;
-    letter-spacing: 0.05em;
-  }
-
-  .card h3 {
-    margin: 8px 0;
-    font-size: 1.1rem;
-  }
-
-  .card p {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    line-height: 1.6;
   }
 
   /* ---- Disclaimer ---- */

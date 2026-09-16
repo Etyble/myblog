@@ -1,0 +1,46 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import MethodCard from "../../../components/MethodCard.astro";
+import { withBase } from "../../../utils/url";
+import { METHODS } from "../../../data/divination";
+---
+
+<Layout title="占卜 — MyWorld" description="各地占卜法，算卦与抽签。">
+  <section class="section">
+    <div class="container">
+      <a class="back" href={withBase("/tools")}>← 工具</a>
+      <h1 class="page-title">占卜</h1>
+      <p class="page-desc">
+        各地流传下来的占法，各有各的规矩。选一个开始。
+      </p>
+
+      <div class="method-grid">
+        {
+          METHODS.map((method) => (
+            <MethodCard
+              href={method.href}
+              icon={method.icon}
+              title={method.title}
+              description={method.description}
+              tag={`${method.origin} · ${method.tag}`}
+            />
+          ))
+        }
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .back {
+    display: inline-block;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+  }
+
+  .method-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+</style>

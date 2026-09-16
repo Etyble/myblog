@@ -11,16 +11,11 @@ entries.forEach((e) => {
 });
 const catNames = Object.keys(categories).sort();
 
-// Pre-render bodies to hidden HTML blocks
-const rendered: { id: string; name: string; category: string; tags: string[]; summary?: string }[] = [];
+// Astro 7 removed `entry.render()`; the loader renders each entry up front, so
+// the client-side switcher can swap pre-rendered HTML blocks.
+const htmlById = new Map<string, string>();
 for (const e of entries) {
-  rendered.push({
-    id: e.id,
-    name: e.data.name,
-    category: e.data.category,
-    tags: e.data.tags,
-    summary: e.data.summary,
-  });
+  htmlById.set(e.id, e.rendered?.html ?? "");
 }
 ---
 
@@ -37,7 +32,7 @@ for (const e of entries) {
               <span class="cat-name">{cat}</span>
               <span class="cat-count">{categories[cat].length}</span>
             </button>
-            <div class="cat-items" style="display:none;">
+            <div class="cat-items" hidden>
               {categories[cat].map((e) => (
                 <button class="entry-link" data-id={e.id}>
                   {e.data.name}
@@ -57,7 +52,7 @@ for (const e of entries) {
     </div>
 
     <!-- Hidden pre-rendered entries -->
-    <div style="display:none;" id="wv-cache">
+    <div hidden id="wv-cache">
       {entries.map((e) => (
         <div id={`wv-${e.id}`}>
           <div class="wv-detail-content">
@@ -68,7 +63,7 @@ for (const e of entries) {
             </div>
             {e.data.summary && <p class="meta-summary">{e.data.summary}</p>}
             <div class="wv-body">
-              {e.body ? <Fragment set:html={e.body} /> : null}
+              <Fragment set:html={htmlById.get(e.id) ?? ""} />
             </div>
           </div>
         </div>
@@ -213,10 +208,9 @@ for (const e of entries) {
   // Collapsible categories
   document.querySelectorAll(".cat-toggle").forEach((btn) => {
     btn.addEventListener("click", () => {
-      const cat = (btn as HTMLElement).dataset.cat!;
       const items = btn.nextElementSibling as HTMLElement;
-      const isOpen = items.style.display !== "none";
-      items.style.display = isOpen ? "none" : "block";
+      const isOpen = !items.hidden;
+      items.hidden = isOpen;
       btn.classList.toggle("open", !isOpen);
     });
   });
@@ -227,7 +221,6 @@ for (const e of entries) {
 
   // Entry selection: swap cached HTML into detail panel
   const detail = document.getElementById("wv-detail")!;
-  const cache = document.getElementById("wv-cache")!;
 
   document.querySelectorAll(".entry-link").forEach((link) => {
     link.addEventListener("click", () => {

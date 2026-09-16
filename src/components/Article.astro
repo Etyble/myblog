@@ -1,0 +1,42 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Prose from "./Prose.astro";
+import { longDate } from "../utils/format";
+
+type Props = {
+  title: string;
+  description?: string;
+  date: Date;
+}
+
+const { title, description, date } = Astro.props;
+---
+
+<Layout title={`${title} — MyWorld`} description={description}>
+  <article class="article">
+    <div class="container">
+      <p class="article-date">{longDate(date)}</p>
+      <h1>{title}</h1>
+      <Prose>
+        <slot />
+      </Prose>
+    </div>
+  </article>
+</Layout>
+
+<style>
+  .article {
+    padding: 80px 0;
+  }
+
+  .article-date {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+  }
+
+  .article h1 {
+    font-size: 2.5rem;
+    margin-bottom: 32px;
+  }
+</style>

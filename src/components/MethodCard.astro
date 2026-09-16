@@ -1,0 +1,78 @@
+---
+import { withBase } from "../utils/url";
+
+type Props = {
+  /** 站点根相对路径，如 /tools/divination/liuyao */
+  href?: string;
+  /** 卡片左上角的符号 */
+  icon: string;
+  title: string;
+  description: string;
+  /** 右下角标签 */
+  tag?: string;
+  /** 未完成的占位卡片 */
+  disabled?: boolean;
+};
+
+const { href, icon, title, description, tag, disabled = false } = Astro.props;
+const url = href ? withBase(href) : undefined;
+const Tag = url && !disabled ? "a" : "div";
+---
+
+<Tag href={url} class:list={["tool-card", { disabled }]}>
+  <div class="tool-icon">{icon}</div>
+  <h3>{title}</h3>
+  <p>{description}</p>
+  {tag && <span class="tool-tag">{tag}</span>}
+</Tag>
+
+<style>
+  .tool-card {
+    display: block;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    color: var(--text) !important;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    text-decoration: none;
+  }
+
+  .tool-card:hover {
+    border-color: var(--accent-glow);
+    transform: translateY(-2px);
+    box-shadow: 0 0 30px rgba(124, 58, 237, 0.1);
+  }
+
+  .tool-card.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+  .tool-icon {
+    font-size: 2rem;
+    color: var(--accent);
+    margin-bottom: 16px;
+  }
+
+  .tool-card h3 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+  }
+
+  .tool-card p {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+
+  .tool-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    padding: 4px 12px;
+    background: rgba(124, 58, 237, 0.15);
+    color: var(--accent);
+    border-radius: 100px;
+  }
+</style>

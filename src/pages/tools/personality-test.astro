@@ -1,0 +1,749 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { TOTAL_QUESTIONS } from "../../utils/ipip-score";
+
+const PAGE_SIZE = 12;
+const totalPages = Math.ceil(TOTAL_QUESTIONS / PAGE_SIZE);
+---
+
+<Layout title="人格测试 — MyWorld" description="IPIP-NEO-120 大五人格测试。">
+  <section class="test">
+    <div class="container">
+      <h1 class="title">人格<span class="gradient-text">测试</span></h1>
+      <p class="subtitle">IPIP-NEO-120 · 大五人格的五个维度与三十个面向</p>
+
+      <!-- ===== Intro ===== -->
+      <div class="panel" id="stage-intro">
+        <p class="intro-text">
+          本测试共 <strong>{TOTAL_QUESTIONS}</strong> 题，逐题自评符合程度即可，
+          没有对错。约需 10–15 分钟。
+        </p>
+        <ul class="intro-list">
+          <li>题目来自 International Personality Item Pool（IPIP）的公开题库。</li>
+          <li>作答仅在浏览器本地计算，不会上传、不会保存到服务器。</li>
+          <li>结果包含五个维度与三十个面向的得分，可直接对照说明阅读。</li>
+        </ul>
+        <p class="intro-warn">
+          注意：本页给出的百分位为<strong>相对本站作者</strong>的换算，并非基于公开常模样本，
+          不能理解为「高于多少比例的人」。详见结果页说明。
+        </p>
+
+        <button id="start" class="btn-primary">开始测试</button>
+      </div>
+
+      <!-- ===== Quiz ===== -->
+      <div class="panel" id="stage-quiz" hidden>
+        <div class="quiz-head">
+          <div class="quiz-progress-text">
+            第 <b id="page-no">1</b> / {totalPages} 页
+            <span class="sep">·</span>
+            已答 <b id="answered">0</b> / {TOTAL_QUESTIONS}
+          </div>
+          <div class="progress-track"><i id="progress-fill"></i></div>
+        </div>
+
+        <div id="questions"></div>
+
+        <div class="quiz-nav">
+          <button id="prev" class="btn-secondary">← 上一页</button>
+          <button id="next" class="btn-primary">下一页 →</button>
+        </div>
+        <p class="quiz-hint" id="quiz-hint"></p>
+      </div>
+
+      <!-- ===== Result ===== -->
+      <div id="stage-result" hidden></div>
+
+      <p class="footnote">
+        IPIP-NEO-120 由 Lewis R. Goldberg 发起的人格项目库公开，后由 John A. Johnson
+        整理为 120 题版本。本页面仅作自评参考，不构成任何心理诊断。
+      </p>
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .test {
+    padding: 60px 0 120px;
+  }
+
+  .title {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .gradient-text {
+    background: linear-gradient(135deg, #a78bfa 0%, #7c3aed 40%, #6366f1 70%, #a78bfa 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-shift 6s ease-in-out infinite;
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  .subtitle {
+    color: var(--text-muted);
+    margin-bottom: 32px;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    margin-bottom: 20px;
+  }
+
+  /* ---- Intro ---- */
+  .intro-text {
+    line-height: 1.9;
+    margin-bottom: 16px;
+  }
+
+  .intro-list {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    line-height: 1.9;
+    padding-left: 20px;
+    margin-bottom: 20px;
+  }
+
+  .intro-list li {
+    margin-bottom: 4px;
+  }
+
+  .intro-warn {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    border-left: 2px solid #f59e0b;
+    padding: 10px 14px;
+    background: rgba(245, 158, 11, 0.06);
+    margin-bottom: 24px;
+  }
+
+  .intro-warn strong {
+    color: #f59e0b;
+  }
+
+  /* ---- Quiz ---- */
+  .quiz-head {
+    margin-bottom: 20px;
+  }
+
+  .quiz-progress-text {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .quiz-progress-text b {
+    color: var(--accent);
+  }
+
+  .sep {
+    margin: 0 6px;
+    opacity: 0.5;
+  }
+
+  .progress-track {
+    height: 4px;
+    background: var(--bg);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .progress-track i {
+    display: block;
+    height: 100%;
+    width: 0;
+    background: linear-gradient(90deg, var(--accent), var(--accent-glow));
+    transition: width 0.3s ease;
+  }
+
+  .q-row {
+    display: grid;
+    grid-template-columns: 1fr repeat(5, 84px);
+    gap: 8px;
+    align-items: center;
+    padding: 10px 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .quiz-hint {
+    font-size: 0.8rem;
+    color: #f59e0b;
+    margin-top: 12px;
+    min-height: 1.2em;
+  }
+
+</style>
+
+<style is:global>
+  /* 题目列表与结果区均由脚本通过 innerHTML 注入，拿不到 Astro 的样式作用域
+     属性，因此这些规则必须全局化。 */
+  .q-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .q-text {
+    font-size: 0.92rem;
+    line-height: 1.6;
+  }
+
+  .q-num {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+    margin-right: 6px;
+  }
+
+  /* 单选按钮：整格可点 */
+  .q-choice {
+    text-align: center;
+  }
+
+  .q-choice input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .q-choice label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 2px 4px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.68rem;
+    line-height: 1.25;
+    color: var(--text-muted);
+    transition: border-color 0.2s, background 0.2s, color 0.2s;
+  }
+
+  .q-choice label:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .q-choice input:checked + label {
+    background: rgba(124, 58, 237, 0.18);
+    border-color: var(--accent);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  /* 选项标签：宽屏显示完整文字，窄屏换成短标签 */
+  .choice-short {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    .choice-full {
+      display: none;
+    }
+
+    .choice-short {
+      display: inline;
+    }
+  }
+
+  /* ---- Result ---- */
+  .result-head {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .result-head h2 {
+    font-size: 1.6rem;
+    margin-bottom: 8px;
+  }
+
+  .result-tip {
+    font-size: 0.82rem;
+    color: #f59e0b;
+    line-height: 1.7;
+    border-left: 2px solid #f59e0b;
+    padding: 10px 14px;
+    background: rgba(245, 158, 11, 0.06);
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 20px;
+  }
+
+  .result-head p {
+    color: var(--text-muted);
+    font-size: 0.9rem;
+  }
+
+  .domain {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .domain-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 6px;
+  }
+
+  .domain-name {
+    font-size: 1.05rem;
+  }
+
+  .domain-score {
+    font-family: monospace;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  .domain-score b {
+    color: var(--accent);
+    font-size: 1rem;
+  }
+
+  .domain-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-bottom: 12px;
+  }
+
+  .bar-track {
+    height: 8px;
+    background: var(--bg);
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 6px;
+  }
+
+  .bar-track i {
+    display: block;
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--accent-glow), var(--accent));
+    transition: width 0.6s ease;
+  }
+
+  .bar-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  .level-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 100px;
+    font-size: 0.7rem;
+    border: 1px solid var(--border);
+  }
+
+  .facet-toggle {
+    margin-top: 14px;
+    background: transparent;
+    border: none;
+    color: var(--accent);
+    font-size: 0.8rem;
+    font-family: inherit;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  .facet-toggle[data-open="0"]::after {
+    content: " ▾";
+  }
+
+  .facet-toggle[data-open="1"]::after {
+    content: " ▴";
+  }
+
+  .facet-list {
+    margin-top: 14px;
+    border-top: 1px solid var(--border);
+    padding-top: 14px;
+    display: grid;
+    gap: 10px;
+  }
+
+  .facet-row {
+    display: grid;
+    grid-template-columns: 88px 1fr 70px;
+    gap: 10px;
+    align-items: center;
+    font-size: 0.8rem;
+  }
+
+  .facet-name {
+    color: var(--text-muted);
+  }
+
+  .facet-bar {
+    height: 5px;
+    background: var(--bg);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+
+  .facet-bar i {
+    display: block;
+    height: 100%;
+    background: var(--accent);
+    border-radius: 999px;
+  }
+
+  .facet-val {
+    text-align: right;
+    font-family: monospace;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+  }
+
+  .result-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 24px;
+    flex-wrap: wrap;
+  }
+
+  .result-note {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    border-top: 1px solid var(--border);
+    padding-top: 16px;
+    margin-top: 24px;
+  }
+
+  .footnote {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+    margin-top: 8px;
+  }
+
+  @media (max-width: 640px) {
+    .panel {
+      padding: 20px 14px;
+    }
+
+    /* 手机屏窄，选项改用短标签 */
+    .q-row {
+      grid-template-columns: 1fr repeat(5, 46px);
+      gap: 4px;
+    }
+
+    .q-text {
+      font-size: 0.85rem;
+    }
+
+    .q-choice label {
+      min-height: 36px;
+      font-size: 0.58rem;
+      padding: 2px;
+    }
+
+    .facet-row {
+      grid-template-columns: 70px 1fr 62px;
+    }
+  }
+</style>
+
+<script>
+  import { QUESTIONS, CHOICES, SCORING } from "../../data/ipip-neo.ts";
+  import { score, answeredCount, unansweredIds, toBaseline, TOTAL_QUESTIONS } from "../../utils/ipip-score.ts";
+  import { barWidth } from "../../utils/percentile.ts";
+
+  const PAGE_SIZE = 12;
+  const totalPages = Math.ceil(TOTAL_QUESTIONS / PAGE_SIZE);
+  const STORAGE_KEY = "ipip-neo-120-answers";
+
+  /** 窄屏用的短标签，与 CHOICES 的 1–5 一一对应。 */
+  const SHORT_LABELS: Record<number, string> = {
+    1: "很不准",
+    2: "较不准",
+    3: "中性",
+    4: "较准",
+    5: "很准",
+  };
+
+  const stageIntro = document.getElementById("stage-intro") as HTMLElement;
+  const stageQuiz = document.getElementById("stage-quiz") as HTMLElement;
+  const stageResult = document.getElementById("stage-result") as HTMLElement;
+  const questionsEl = document.getElementById("questions") as HTMLElement;
+  const pageNoEl = document.getElementById("page-no") as HTMLElement;
+  const answeredEl = document.getElementById("answered") as HTMLElement;
+  const progressFill = document.getElementById("progress-fill") as HTMLElement;
+  const prevBtn = document.getElementById("prev") as HTMLButtonElement;
+  const nextBtn = document.getElementById("next") as HTMLButtonElement;
+  const hintEl = document.getElementById("quiz-hint") as HTMLElement;
+
+  let answers: Record<number, number> = {};
+  let page = 0;
+
+  // 恢复上次未完成的作答
+  try {
+    const saved = sessionStorage.getItem(STORAGE_KEY);
+    if (saved) answers = JSON.parse(saved);
+  } catch {
+    answers = {};
+  }
+
+  function persist() {
+    try {
+      sessionStorage.setItem(STORAGE_KEY, JSON.stringify(answers));
+    } catch {
+      /* 隐私模式下写入可能失败，忽略即可 */
+    }
+  }
+
+  function renderPage() {
+    const start = page * PAGE_SIZE;
+    const slice = QUESTIONS.slice(start, start + PAGE_SIZE);
+
+    questionsEl.innerHTML =
+      '<ul class="q-list">' +
+      slice
+        .map(
+          (q) =>
+            '<li class="q-row">' +
+            `<div class="q-text"><span class="q-num">${q.id}.</span>${q.text}</div>` +
+            CHOICES.map((c) => {
+              const checked = answers[q.id] === c.id ? " checked" : "";
+              const inputId = `q${q.id}-c${c.id}`;
+              return (
+                '<div class="q-choice">' +
+                `<input type="radio" name="q${q.id}" id="${inputId}" value="${c.id}"${checked} />` +
+                `<label for="${inputId}">` +
+                `<span class="choice-full">${c.text}</span>` +
+                `<span class="choice-short">${SHORT_LABELS[c.id] ?? c.id}</span>` +
+                "</label>" +
+                "</div>"
+              );
+            }).join("") +
+            "</li>",
+        )
+        .join("") +
+      "</ul>";
+
+    pageNoEl.textContent = String(page + 1);
+    prevBtn.disabled = page === 0;
+    nextBtn.textContent = page === totalPages - 1 ? "查看结果" : "下一页 →";
+    hintEl.textContent = "";
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function updateProgress() {
+    const done = answeredCount(answers);
+    answeredEl.textContent = String(done);
+    progressFill.style.width = ((done / TOTAL_QUESTIONS) * 100).toFixed(1) + "%";
+  }
+
+  // 事件委托：勾选即记录
+  questionsEl.addEventListener("change", (event) => {
+    const input = event.target as HTMLInputElement;
+    if (input.type !== "radio" || !input.name.startsWith("q")) return;
+    const qid = Number(input.name.slice(1));
+    answers[qid] = Number(input.value);
+    persist();
+    updateProgress();
+    if (hintEl.textContent) hintEl.textContent = "";
+  });
+
+  prevBtn.addEventListener("click", () => {
+    if (page > 0) {
+      page--;
+      renderPage();
+    }
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if (page < totalPages - 1) {
+      page++;
+      renderPage();
+      return;
+    }
+    // 最后一页：检查是否漏答
+    const missing = unansweredIds(answers);
+    if (missing.length > 0) {
+      hintEl.textContent = `还有 ${missing.length} 题未作答（第 ${missing.slice(0, 8).join("、")}${missing.length > 8 ? " …" : ""} 题），补完才能看结果。`;
+      // 跳到第一道未答题所在页
+      const firstMissing = missing[0];
+      const target = QUESTIONS.findIndex((q) => q.id === firstMissing);
+      page = Math.floor(target / PAGE_SIZE);
+      renderPage();
+      hintEl.textContent = `还有 ${missing.length} 题未作答，已跳到第一处漏答的位置。`;
+      return;
+    }
+    showResult();
+  });
+
+  function showResult() {
+    const report = score(answers);
+
+    const domainHtml = report.domains
+      .map((d) => {
+        const facets = d.facets
+          .map((f) => {
+            const bar = barWidth(f.percentile);
+            const val =
+              f.percentile === null
+                ? `${f.raw}/20`
+                : `${f.raw}/20 · ${f.percentile}%`;
+            return (
+              '<div class="facet-row">' +
+              `<span class="facet-name">${f.facet.name}</span>` +
+              `<span class="facet-bar"><i style="width:${bar}%"></i></span>` +
+              `<span class="facet-val">${val}</span>` +
+              "</div>"
+            );
+          })
+          .join("");
+
+        const scoreText =
+          d.percentile === null
+            ? `<b>${d.raw}</b> / ${d.max}`
+            : `<b>${d.raw}</b> / ${d.max} · ${d.percentile}%`;
+        const levelTag = d.level ? ` <span class="level-tag">${d.level}</span>` : "";
+        const bar = barWidth(d.percentile);
+        const metaRight =
+          d.delta === null
+            ? "尚未设定基准"
+            : d.delta === 0
+              ? "与基准相同"
+              : d.delta > 0
+                ? `高于基准 ${d.delta} 分`
+                : `低于基准 ${Math.abs(d.delta)} 分`;
+
+        return (
+          '<div class="domain">' +
+          '<div class="domain-head">' +
+          `<span class="domain-name">${d.name}${levelTag}</span>` +
+          `<span class="domain-score">${scoreText}</span>` +
+          "</div>" +
+          `<p class="domain-desc">${d.description}</p>` +
+          `<div class="bar-track"><i style="width:${bar}%"></i></div>` +
+          `<div class="bar-meta"><span>原始分范围 ${d.min}–${d.max}</span><span>${metaRight}</span></div>` +
+          `<button class="facet-toggle" data-target="facets-${d.code}" data-open="0">面向明细</button>` +
+          `<div class="facet-list" id="facets-${d.code}" hidden>${facets}</div>` +
+          "</div>"
+        );
+      })
+      .join("");
+
+    const levels = SCORING.levels
+      .map((l) => `${l.label} ${l.minPercentile}–${l.maxPercentile}%`)
+      .join("　");
+    const complete = report.answered === report.total;
+
+    const note = report.hasBaseline
+      ? "<p><strong>关于百分位：</strong>本页百分位是<strong>相对本站作者本人</strong>的作答（个人基准）换算的，" +
+        "50% 代表与该基准相同。<strong>它不是</strong>基于人群常模的百分位，不能读作「高于百分之多少的人」。</p>"
+      : "<p><strong>尚未设定个人基准：</strong>因此本页只显示原始分，不做百分位换算。" +
+        "本站的参照点是作者本人的一次完整作答——做完本页测试后可在下方导出基准数据。</p>";
+
+    const exportButton =
+      !report.hasBaseline && complete
+        ? '<button id="export-baseline" class="btn-secondary">导出基准数据</button>'
+        : "";
+
+    stageResult.innerHTML =
+      '<div class="result-head">' +
+      "<h2>你的大五人格剖面</h2>" +
+      `<p>已作答 ${report.answered} / ${report.total} 题</p>` +
+      "</div>" +
+      (report.hasBaseline ? "" : '<p class="result-tip">本站尚未录入个人基准，以下只展示原始分。</p>') +
+      domainHtml +
+      '<div class="result-note">' +
+      note +
+      `<p>等级划分依：${levels}。</p>` +
+      "<p>计分方式：反向题按 6 − 原始分转换，每个面向为该面向 4 题之和（4–20），每个维度为其 6 个面向之和（24–120）。</p>" +
+      "</div>" +
+      '<div class="result-actions">' +
+      '<button id="retake" class="btn-secondary">重新测试</button>' +
+      '<button id="print" class="btn-secondary">打印 / 存为 PDF</button>' +
+      exportButton +
+      "</div>";
+
+    stageIntro.hidden = true;
+    stageQuiz.hidden = true;
+    stageResult.hidden = false;
+
+    // 面向展开/收起
+    stageResult.querySelectorAll<HTMLButtonElement>(".facet-toggle").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const target = stageResult.querySelector<HTMLElement>(`#${btn.dataset.target}`)!;
+        const open = target.hidden;
+        target.hidden = !open;
+        btn.dataset.open = open ? "1" : "0";
+      });
+    });
+
+    // 导出基准数据（用于录入 src/data/self-norms.ts）
+    const exportBtn = document.getElementById("export-baseline") as HTMLButtonElement | null;
+    if (exportBtn) {
+      const original = exportBtn.textContent;
+      exportBtn.addEventListener("click", () => {
+        const baseline = toBaseline(answers, new Date().toISOString().slice(0, 10));
+        const json = "baseline: " + JSON.stringify(baseline, null, 2);
+        navigator.clipboard?.writeText(json).then(
+          () => {
+            exportBtn.textContent = "已复制到剪贴板";
+          },
+          () => {
+            exportBtn.textContent = "复制失败，请手动选择";
+            console.info(json);
+          },
+        );
+        console.info("[IPIP-NEO-120] 基准数据：\n" + json);
+        setTimeout(() => {
+          exportBtn.textContent = original;
+        }, 2500);
+      });
+    }
+
+    document.getElementById("retake")!.addEventListener("click", () => {
+      answers = {};
+      persist();
+      page = 0;
+      stageResult.hidden = true;
+      stageQuiz.hidden = false;
+      renderPage();
+    });
+
+    document.getElementById("print")!.addEventListener("click", () => window.print());
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  document.getElementById("start")!.addEventListener("click", () => {
+    stageIntro.hidden = true;
+    stageQuiz.hidden = false;
+    renderPage();
+  });
+</script>

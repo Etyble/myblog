@@ -1,4 +1,5 @@
 User-agent: *
 Disallow: /
 
-# This is a personal site. Please don't index it.
+# Deliberately unindexed — this is a personal site. The noindex meta tag in
+# src/layouts/Layout.astro enforces the same thing per page.

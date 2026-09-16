@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import MethodCard from "../../components/MethodCard.astro";
 ---
 
 <Layout title="Tools — MyWorld" description="Small creative tools and experiments.">
@@ -8,103 +9,41 @@ import Layout from "../../layouts/Layout.astro";
       <h1 class="page-title">Tools</h1>
       <p class="page-desc">一些小工具，一些实验，也许有用，也许只是好玩。</p>
 
-      <div class="tool-grid">
-        <a href={import.meta.env.BASE_URL === "/" ? "/tools/cyber-mirror" : import.meta.env.BASE_URL + "/tools/cyber-mirror"} class="tool-card">
-          <div class="tool-icon">◇</div>
-          <h2>赛博镜像</h2>
-          <p>
-            回答关于"今天"的简单问题，生成你当下的人格图谱。
-            这不是占卜，这是一面镜子。
-          </p>
-          <span class="tool-tag">人格图谱</span>
-        </a>
+      <div class="method-grid">
+        <MethodCard
+          href="/tools/divination"
+          icon="◇"
+          title="占卜"
+          description="各地流传下来的占法，各有各的规矩。目前的算卦与抽签只是开始。"
+          tag="民俗占法"
+        />
 
-        <a href={import.meta.env.BASE_URL === "/" ? "/tools/nutrition-calc" : import.meta.env.BASE_URL + "/tools/nutrition-calc"} class="tool-card">
-          <div class="tool-icon">⚖</div>
-          <h2>营养计算器</h2>
-          <p>
-            选择今天吃的食物，输入分量（支持模糊描述），实时计算营养是否达标。
-          </p>
-          <span class="tool-tag">健康</span>
-        </a>
+        <MethodCard
+          href="/tools/personality-test"
+          icon="◈"
+          title="人格测试"
+          description="IPIP-NEO-120，测量大五人格的五个维度与三十个面向。基于国际人格项目库的公开题库，不是占卜。"
+          tag="心理测量"
+        />
 
-        <div class="tool-card disabled">
-          <div class="tool-icon">△</div>
-          <h2>Coming soon</h2>
-          <p>更多工具开发中...</p>
-        </div>
+        <MethodCard
+          href="/tools/nutrition-calc"
+          icon="⚖"
+          title="营养计算器"
+          description="选择今天吃的食物，输入分量，计算营养是否达标。"
+          tag="健康"
+        />
+
+        <MethodCard icon="△" title="Coming soon" description="更多工具开发中..." disabled />
       </div>
     </div>
   </section>
 </Layout>
 
 <style>
-  .section {
-    padding: 80px 0;
-  }
-
-  .page-title {
-    font-size: 2.5rem;
-    margin-bottom: 8px;
-  }
-
-  .page-desc {
-    color: var(--text-muted);
-    margin-bottom: 48px;
-  }
-
-  .tool-grid {
+  .method-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
-  }
-
-  .tool-card {
-    display: block;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 32px;
-    color: var(--text) !important;
-    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
-    text-decoration: none;
-  }
-
-  .tool-card:hover {
-    border-color: var(--accent-glow);
-    transform: translateY(-2px);
-    box-shadow: 0 0 30px rgba(124, 58, 237, 0.1);
-  }
-
-  .tool-card.disabled {
-    opacity: 0.5;
-    pointer-events: none;
-  }
-
-  .tool-icon {
-    font-size: 2rem;
-    color: var(--accent);
-    margin-bottom: 16px;
-  }
-
-  .tool-card h2 {
-    font-size: 1.2rem;
-    margin-bottom: 8px;
-  }
-
-  .tool-card p {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    line-height: 1.6;
-    margin-bottom: 16px;
-  }
-
-  .tool-tag {
-    display: inline-block;
-    font-size: 0.75rem;
-    padding: 4px 12px;
-    background: rgba(124, 58, 237, 0.15);
-    color: var(--accent);
-    border-radius: 100px;
   }
 </style>

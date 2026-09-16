@@ -1,0 +1,61 @@
+---
+import { shortDate } from "../utils/format";
+import { withBase } from "../utils/url";
+
+type Props = {
+  /** Published entries to render, newest first. */
+  posts: { id: string; data: { date: Date; title: string; description?: string } }[];
+  /** Collection segment used to build each article URL. */
+  section: "blog" | "writings";
+  /** Shown when there is nothing to list. */
+  empty: string;
+}
+
+const { posts, section, empty } = Astro.props;
+---
+
+<div class="post-list">
+  {
+    posts.length > 0 ? (
+      posts.map((post) => (
+        <article class="post-item">
+          <time>{shortDate(post.data.date)}</time>
+          <h2>
+            <a href={withBase(`/${section}/${post.id}`)}>{post.data.title}</a>
+          </h2>
+          <p>{post.data.description}</p>
+        </article>
+      ))
+    ) : (
+      <div class="empty">{empty}</div>
+    )
+  }
+</div>
+
+<style>
+  .post-list {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+  }
+
+  .post-item time {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .post-item h2 {
+    font-size: 1.3rem;
+    margin: 4px 0;
+  }
+
+  .post-item p {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  .empty {
+    color: var(--text-muted);
+    font-style: italic;
+  }
+</style>

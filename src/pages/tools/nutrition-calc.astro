@@ -357,7 +357,17 @@ import Layout from "../../layouts/Layout.astro";
   .total-bar-fill {
     height: 100%;
     border-radius: 999px;
+    background: #22c55e;
     transition: width 0.4s ease, background 0.4s ease;
+  }
+
+  /* Intake states: on target, over, well over. */
+  .total-bar-fill.is-over {
+    background: #f59e0b;
+  }
+
+  .total-bar-fill.is-danger {
+    background: #ef4444;
   }
 
   .total-values {
@@ -639,15 +649,18 @@ import Layout from "../../layouts/Layout.astro";
     container.innerHTML = '<div class="total-grid">' +
       nutrients
         .map((n) => {
-          const pct = Math.min(100, (n.value / n.target) * 100);
-          let color = "#22c55e";
-          if (pct > 95) color = "#f59e0b";
-          if (pct > 110) color = "#ef4444";
+          const rawPct = (n.value / n.target) * 100;
+          const pct = Math.min(100, rawPct);
+          // State drives the colour via a class; only the computed width stays
+          // inline. Uses the *unclamped* ratio — clamping first would make the
+          // amber/red states unreachable.
+          const stateClass =
+            rawPct > 110 ? " is-danger" : rawPct > 95 ? " is-over" : "";
 
           return (
             '<div class="total-item">' +
             '<div class="total-label">' + n.label + '</div>' +
-            '<div class="total-bar-wrap"><div class="total-bar-fill" style="width:' + pct + '%;background:' + color + ';"></div></div>' +
+            '<div class="total-bar-wrap"><div class="total-bar-fill' + stateClass + '" style="width:' + pct + '%;"></div></div>' +
             '<div class="total-values">' + n.fmt(n.value) + ' ' + n.unit + ' <span class="target">/ ' + n.target + '</span></div>' +
             '</div>'
           );
