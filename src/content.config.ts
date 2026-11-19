@@ -60,11 +60,27 @@ function parseFrontmatter(raw: string): {
   return { data, body: raw.slice(match[0].length) };
 }
 
+/**
+ * 每个内容目录最近一次的同步函数，供文件监听复用。
+ * 键为绝对路径目录，值为「用当前上下文重跑一次全量同步」。
+ */
+const syncByDir = new Map<string, () => Promise<void>>();
+/** 已经挂过监听的目录，避免重复 sync 时反复注册事件。 */
+const watchedDirs = new Set<string>();
+
 /** Builds a loader that reads every .md file under `base` recursively. */
 function markdownDir(base: string) {
   return {
     name: `markdown-dir:${base}`,
-    load: async ({ config, parseData, generateDigest, renderMarkdown, store, logger }: any) => {
+    load: async ({
+      config,
+      parseData,
+      generateDigest,
+      renderMarkdown,
+      store,
+      logger,
+      watcher,
+    }: any) => {
       const { readdir, readFile, stat } = await import("node:fs/promises");
       const { join, relative, sep } = await import("node:path");
       const { fileURLToPath, pathToFileURL } = await import("node:url");
@@ -75,6 +91,7 @@ function markdownDir(base: string) {
       // directory is actually there.
       const root = fileURLToPath(config.root);
       const dir = join(root, base);
+      const toPosix = (value: string) => value.split(sep).join("/");
 
       const dirExists = await stat(dir).then((s) => s.isDirectory()).catch(() => false);
       if (!dirExists) {
@@ -93,18 +110,13 @@ function markdownDir(base: string) {
         return found;
       }
 
-      const files = await walk(dir);
-      if (files.length === 0) {
-        throw new Error(`[${base}] no .md files found under ${dir}`);
-      }
-      logger.info(`loaded ${files.length} entr${files.length === 1 ? "y" : "ies"} from ${base}`);
-
-      for (const file of files) {
+      /** 读取并写入单个文件，返回它的 id。 */
+      async function loadFile(file: string): Promise<string> {
         const raw = await readFile(file, "utf-8");
         const { data, body } = parseFrontmatter(raw);
-        const id = relative(dir, file).split(sep).join("/").replace(/\.md$/, "");
+        const id = toPosix(relative(dir, file)).replace(/\.md$/, "");
         // Astro resolves the entry's source relative to the project root.
-        const filePath = relative(root, file).split(sep).join("/");
+        const filePath = toPosix(relative(root, file));
 
         // YAML dates arrive as strings; the collection schemas expect Date.
         for (const [key, value] of Object.entries(data)) {
@@ -130,7 +142,82 @@ function markdownDir(base: string) {
           digest: generateDigest(raw),
           rendered,
         });
+
+        return id;
       }
+
+      // 同一时刻只跑一次全量同步；期间又来了变更就再补跑一轮。
+      let running = false;
+      let pending = false;
+
+      async function runOnce() {
+        const files = await walk(dir);
+        if (files.length === 0) {
+          throw new Error(`[${base}] no .md files found under ${dir}`);
+        }
+
+        // 全量同步后仍未出现的条目，说明源文件已被删除。
+        const untouched = new Set<string>(store.keys());
+        for (const file of files) {
+          untouched.delete(await loadFile(file));
+        }
+        for (const id of untouched) store.delete(id);
+
+        logger.info(
+          `loaded ${files.length} entr${files.length === 1 ? "y" : "ies"} from ${base}`,
+        );
+      }
+
+      const sync = async () => {
+        if (running) {
+          pending = true;
+          return;
+        }
+        running = true;
+        try {
+          do {
+            pending = false;
+            await runOnce();
+          } while (pending);
+        } finally {
+          running = false;
+        }
+      };
+
+      // 记住最新一次同步函数，供监听器使用（上下文可能每次 sync 都不同）。
+      syncByDir.set(dir, sync);
+
+      await sync();
+
+      // dev 模式下接入 Astro 提供的文件监听，否则 .md 改动必须重启 dev 才生效。
+      if (!watcher || watchedDirs.has(dir)) return;
+      watchedDirs.add(dir);
+
+      const dirPosix = toPosix(dir);
+      const isTarget = (changed: unknown): changed is string => {
+        if (typeof changed !== "string") return false;
+        if (!changed.toLowerCase().endsWith(".md")) return false;
+        return toPosix(changed).startsWith(`${dirPosix}/`);
+      };
+
+      const reload = async (changed: string) => {
+        if (!isTarget(changed)) return;
+        const run = syncByDir.get(dir);
+        if (!run) return;
+        try {
+          await run();
+          logger.info(`reloaded content: ${toPosix(relative(dir, changed))}`);
+        } catch (error) {
+          logger.error(
+            `failed to reload content: ${error instanceof Error ? error.message : String(error)}`,
+          );
+        }
+      };
+
+      watcher.add(dir);
+      watcher.on("change", (changed: string) => void reload(changed));
+      watcher.on("add", (changed: string) => void reload(changed));
+      watcher.on("unlink", (changed: string) => void reload(changed));
     },
   };
 }

@@ -4,7 +4,7 @@ category: "种族"
 order: 1
 tags: ["智慧种", "短寿", "扩张性"]
 summary: "旧时代的继承者，寿命短暂但繁衍迅速，遍布已知世界的每个角落。"
-draft: false
+draft: true
 ---
 
 ## 起源

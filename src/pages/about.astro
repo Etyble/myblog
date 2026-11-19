@@ -5,29 +5,11 @@ import { withBase } from "../utils/url";
 // `pct` drives the bar fill; `score`/`max` drive the printed number. They are
 // deliberately independent — the dossier is meant to read as inconsistent.
 type Stat = { label: string; pct: number; score: number; max: number };
-type Skill = { name: string; level: string; pct: number; note: string };
 
 const coreStats: Stat[] = [
-  { label: "生命", pct: 73, score: 53, max: 100 },
-  { label: "理智", pct: 58, score: 24, max: 100 },
-  { label: "创造力", pct: 88, score: 88, max: 100 },
-  { label: "行动力", pct: 64, score: 84, max: 100 },
-];
-
-const personaSkills: Skill[] = [
-  { name: "三剑合一", level: "MASTERY", pct: 92, note: "虚无为锋、存在为脊、荒诞为格。可斩万物。" },
-  { name: "体系架构", level: "EXPERT", pct: 75, note: "从代码到世界观到价值分配协议，系统性构建一切。" },
-  { name: "前瞻构想", level: "VISIONARY", pct: 82, note: "创造力引领着人类向无限的宇宙迈进。" },
-  { name: "形意勾勒", level: "ADEPT", pct: 65, note: "创建可供视觉体验的媒介。" },
-  { name: "情绪共鸣", level: "INNATE", pct: 70, note: "感同身受是一种奢望，但我们任为之努力。" },
-];
-
-const techSkills: Skill[] = [
-  { name: "AI 协作 · 提示词工程", level: "MASTERY", pct: 95, note: "深度掌握 AI 辅助开发全流程。模糊想法 → 可运行原型（前后端、脚本、SQL、测试），以 AI 加速学习陌生技术栈。" },
-  { name: "C / C++ / Python / JS / HTML/CSS", level: "EXPERT", pct: 78, note: "多语言栈。熟悉软件架构设计及开发流程，能基于时空复杂度分析和优化代码。" },
-  { name: "深度学习 & PyTorch", level: "ADVANCED", pct: 70, note: "了解深度学习底层原理，有独立模型开发经验。毕设方向为 AI 相关。" },
-  { name: "视觉设计 & Blender", level: "ADEPT", pct: 68, note: "基础美术与线稿设计，可辅助 AI 生图。Blender 经验，能衔接 UI 与功能开发，减少协作损耗。" },
-  { name: "项目协调 · 独狼双模", level: "PROVEN", pct: 72, note: "独立定位根因并验证方案。在校多次协调多角色成员完成项目交付。可独狼可团队。" },
+  { label: "生命", pct: 32, score: 32, max: 100 },
+  { label: "理智", pct: 12, score: 12, max: 100 },
+  { label: "道心", pct: 94, score: 94, max: 100 },
 ];
 ---
 
@@ -35,24 +17,17 @@ const techSkills: Skill[] = [
   <section class="about-page">
     <div class="container">
 
-      <!-- Folder Tabs -->
-      <div class="folder-tabs">
-        <button class="folder-tab active" data-page="1">卷一 · 人格档案</button>
-        <button class="folder-tab" data-page="2">卷二 · 职业能力</button>
-      </div>
-
-      <!-- ===== Page 1: Main Dossier ===== -->
-      <div class="dossier-page active" data-page="1">
-        <div class="dossier-panel">
+      <!-- ===== Main Dossier ===== -->
+      <div class="dossier-panel">
 
         <!-- Top strip: header -->
         <div class="panel-top">
           <div class="panel-badge">
-            <span class="badge-class">四级权限 · 机密档案</span>
-            <span class="badge-id">卷宗 ET-001</span>
+            <span class="badge-class">一级权限</span>
+            <span class="badge-id">卷宗 ETYBLE-001</span>
           </div>
           <div class="panel-right">
-            <span class="panel-org">审判庭档案馆 · 理想主义教团</span>
+            <span class="panel-org">审判庭档案馆</span>
             <div class="panel-class">████ 机密 ████</div>
           </div>
         </div>
@@ -63,13 +38,13 @@ const techSkills: Skill[] = [
           <div class="id-section">
             <div class="id-photo">
               <div class="photo-placeholder">
-                <img src={withBase("/avatar.jpg")} alt="ET" />
+                <img src={withBase("/avatar.jpg")} alt="ETYBLE" />
               </div>
-              <div class="photo-label">SUBJECT #001 · 幼年期影像</div>
+              <div class="photo-label">AVATAR #001 · 幼年期影像</div>
             </div>
             <div class="id-core">
               <h1>Etyble <span class="aka">/ 心乱</span></h1>
-              <p class="id-title">剑道未竟，心魔未斩</p>
+              <p class="id-title">剑道虽尽，心魔未斩</p>
               <p class="id-status">
                 <span class="status-dot active"></span>
                 状态：活跃 · 游荡于现实宇宙
@@ -110,9 +85,9 @@ const techSkills: Skill[] = [
               <div class="block">
                 <h3>▎装备槽</h3>
                 <table class="stat-table">
-                  <tr><td>灵魂形态</td><td>虚无 · 存在 · 荒诞合一形态</td></tr>
-                  <tr><td>主武器</td><td>希望</td></tr>
-                  <tr><td>副武器</td><td>创造力</td></tr>
+                  <tr><td>灵魂</td><td>虚无、存在、荒诞合一形态</td></tr>
+                  <tr><td>主武器</td><td>荒诞</td></tr>
+                  <tr><td>副武器</td><td>希望、创造力</td></tr>
                   <tr><td>防具</td><td>虚无</td></tr>
                   <tr><td>饰品</td><td>互联网文化</td></tr>
                 </table>
@@ -127,231 +102,72 @@ const techSkills: Skill[] = [
                   <tr><td>艺术家们</td><td>曾给予个体启迪</td></tr>
                   <tr><td>帝皇</td><td>曾于尼莫点进行短暂交谈</td></tr>
                   <tr><td>色孽冠军</td><td>曾给予个体蛊惑</td></tr>
+                  <tr><td>死神</td><td>与个体对弈</td></tr>
                   <tr><td>吸魂鬼</td><td>仇敌</td></tr>
                 </table>
               </div>
             </div>
 
-            <!-- RIGHT: Lore + Skills -->
+            <!-- RIGHT: Lore -->
             <div class="col-right">
-
               <!-- Psych Evaluation -->
               <div class="block">
-                <h3>▎心理评估摘要</h3>
-                <p>童年阶段，个体智识未全，误入“完美主义”，引发强迫性思维及焦虑症状，纷扰至今。</p>
-                <p>中学阶段，个体于困境中悟出<strong>"人固有一死，不如尝遍人生精彩"</strong>。初次尝试修复“完美主义”漏洞。</p>
+                <h3>▎阶段摘要</h3>
+                <p>童年阶段，个体智识未全，误入“完美主义”陷阱，引发强迫性思维及焦虑症状，纷扰至今。</p>
+                <p>中学阶段，个体于困境中悟出<strong>"人固有一死，不如尝遍人生精彩"</strong>，展翅而飞，奈何牢笼逼仄，智识未开，虽飞而不得道。同时尝试修复“完美主义”漏洞，亦无进展。</p>
                 <p>大学阶段，个体草创<strong>"虚无剑道"</strong>，后将其发展为三剑合一形态，可斩万物。在长期与虚无的搏斗中，坠入"陷入虚无—寻找解药—误以为得救—再次坠入"循环。最终在阅读与思考中参悟<strong>"要爱生活本身，不要爱生活的意义"</strong>。</p>
-                <p>出租屋阶段，个体投身于众生中，寻得一缕天地大道，知授业恩师，受无极之法，剑指仇敌，道心愈坚。以虚无淬炼存在与荒诞，窥得世界本源，剑法愈烈。</p>
-                <p>个体为钻研自身，曾将自身形态投射于无数其他个体，受其反噬，至今不得结果。</p>
-                <p>当前心理状态：<strong>稳定临界点</strong>。已将虚无、存在、荒诞"三剑合一"。个体坚信<strong>物质是世界基础</strong>，要影响世界就不得不影响物质。在此基础之上，修心是利器，用于驾驭虚无。善良和浪漫是其底色。</p>
-                <p class="eval-stamp">评估结论：适合自由行动。不建议限制。建议保持当前生存环境中的自由参数。</p>
+                <p>出租屋阶段，个体投身于众生中，寻得一缕天地大道，知<strong>授业恩师</strong>，受无极之法，剑指仇敌，道心愈坚。以虚无淬体，窥得世界本源，剑法愈烈。后与虚无本源合道，<strong>"虚无剑道"</strong>大成，斩神魔，斩生死，欲遁凡尘而去，苦登仙而不得。</p>
+                <p>在遥远的未来，个体于光阴长河悟道，转身回望，长吟道：</p>
+                <p><strong>误入淤泥尘世，虚度似水流年。</strong></p>
+                <p><strong>栖身归宿不得见。</strong></p>
+                <p><strong>惹满身烦厌，困一生执念。</strong></p>
+                <p><strong>心乱成空忽现，剑斩八荒从愿。</strong></p>
+                <p><strong>地薄水浅天不远。</strong></p>
+                <p><strong>东方歌未竟，敢为天下先！</strong></p>
               </div>
 
               <!-- Tags -->
               <div class="block">
-                <h3>▎特征标签</h3>
+                <h3>▎标签</h3>
                 <div class="tag-set">
-                  <span>唯物主义</span><span>实用主义</span><span>理想主义</span><span>浪漫主义</span>
-                  <span>探险者</span><span>新世纪耍起战士</span><span>自由意志</span>
-                  <span>死线战士</span><span>社交恐怖分子</span>
+                  <span>共产主义</span><span>唯物主义</span><span>理想主义</span><span>浪漫主义</span>
+                  <span>中二病</span><span>江湖剑客</span><span>新世纪耍起战士</span><span>社交恐怖分子</span>
                   <span>游戏</span><span>绘画</span><span>写作</span><span>音乐</span>
-                  <span>战锤40K</span><span>EVA</span><span>蛊真人</span>
+                  <span>蛊真人</span><span>战锤40K</span><span>EVA</span>
                   <span class="tag-empty">...</span>
                 </div>
               </div>
 
-                            <!-- Skills -->
               <div class="block">
-                <h3>▎能力矩阵</h3>
-                <div class="skill-list">
-                  {personaSkills.map((skill) => (
-                    <div class="skill">
-                      <div class="skill-head">
-                        <span>{skill.name}</span>
-                        <span class="skill-lvl">{skill.level}</span>
-                      </div>
-                      <div class="skill-bar"><i style={`width:${skill.pct}%`} /></div>
-                      <p>{skill.note}</p>
-                    </div>
-                  ))}
-                </div>
+                <h3>▎媒体媒介</h3>
+                <ul class="media-list">
+                  <li>
+                    <button type="button" class="media-item" data-copy="36215188">
+                      <span class="media-platform">B站</span>
+                      <span class="media-name">放生子弹</span>
+                      <span class="media-id">UID 36215188</span>
+                      <span class="media-copy-hint" data-label="复制">复制</span>
+                    </button>
+                  </li>
+                  <li>
+                    <button type="button" class="media-item" data-copy="24318240654">
+                      <span class="media-platform">抖音</span>
+                      <span class="media-name">心乱</span>
+                      <span class="media-id">抖音号 24318240654</span>
+                      <span class="media-copy-hint" data-label="复制">复制</span>
+                    </button>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
 
-          <!-- ===== Timeline (full width) ===== -->
-          <div class="block block-full">
-            <h3>▎行动记录 · 时间线</h3>
-            <div class="timeline">
-              <div class="tl-phase">
-                <div class="tl-marker"></div>
-                <span class="tl-era">童年–初中</span>
-                <p>"好孩子"形态。成绩优异，恐惧犯错，种植焦虑。</p>
-              </div>
-              <div class="tl-phase">
-                <div class="tl-marker"></div>
-                <span class="tl-era">高中</span>
-                <p>强迫性思维全面爆发。反复洗手、追求绝对直线、被害妄想、幻想绝症。濒临崩溃。</p>
-              </div>
-              <div class="tl-phase critical">
-                <div class="tl-marker"></div>
-                <span class="tl-era">2023 · 高二 · 觉醒事件</span>
-                <p>一日顿悟："人固有一死，不如尝遍新鲜"。于大耍起时代前激活耍起模式，自学绘画，为班级设计LOGO、班服、班旗。首个关键转折。《过往》记录于此。</p>
-              </div>
-              <div class="tl-phase critical">
-                <div class="tl-marker"></div>
-                <span class="tl-era">2023–2024 · 宿舍时期</span>
-                <p>尝试远离家庭，成为内宿生。与一位乱弹吉他，用老人机创造像素作品的"生活艺术家"遭遇，产生了深远影响。"此时此刻恰如彼时彼刻"。最快乐的一段时光。一场救赎。</p>
-              </div>
-              <div class="tl-phase">
-                <div class="tl-marker"></div>
-                <span class="tl-era">2024 · 大学前期</span>
-                <p>旧系统故障复发。先后写下《虚无的开端》《陷入虚无》，在创新实践课的自学AI中找到了片刻的纯粹快乐。</p>
-              </div>
-              <div class="tl-phase">
-                <div class="tl-marker"></div>
-                <span class="tl-era">2024 · 社交实验</span>
-                <p>从"社恐"短暂突变为"社交恐怖分子"，利用此机会进行了代号00042-01的不严谨社会实验。"压抑的环境里很少有勇敢的人，可惜了那么多有趣的灵魂。"</p>
-              </div>
-              <div class="tl-phase">
-                <div class="tl-marker"></div>
-                <span class="tl-era">2024–2025 · 虚无剑道</span>
-                <p>在反复坠入虚无又爬起的过程中，锻造出以"虚无"一剑为根基的剑道。领悟"要爱生活本身，不要爱生活的意义"。</p>
-              </div>
-              <div class="tl-phase">
-                <div class="tl-marker"></div>
-                <span class="tl-era">2025 · 村佬进城</span>
-                <p>杭州万象城——在苹果店的落地窗前看见自己缺了一半手机壳的破安卓。钱塘江边，雾很大，江水浑浊。"天呐，这就是未来么？"在苹果销售员的眼中看见了最虚无的眼神之一。</p>
-              </div>
-              <div class="tl-phase critical">
-                <div class="tl-marker"></div>
-                <span class="tl-era">2025.12 · 三剑合一</span>
-                <p>杭州·龙场悟道。虚无、存在、荒诞——三者归一。此招可斩万物。"这大学读得值得!"</p>
-              </div>
-              <div class="tl-phase">
-                <div class="tl-marker"></div>
-                <span class="tl-era">2026 · 流浪宣言</span>
-                <p>"我要找到一个不存在的地方，在那里生长。"将善良置于流淌的浪漫之上，风吹在人海中掀起流浪。毕业前夕，未来未定。</p>
-              </div>
-              <div class="tl-phase pending">
-                <div class="tl-marker"></div>
-                <span class="tl-era">???</span>
-                <p class="redacted">[ DATA EXPUNGED — AWAITING INPUT ]</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Quotes -->
-          <div class="block block-full block-quotes">
-            <h3>▎通讯记录截获</h3>
-            <div class="comms">
-              <div class="comm"><span class="comm-id">INTERNAL/觉醒日志_2023</span>"未知就是生活，冒险就是生活，疯狂就是生活，自由就是生活。"</div>
-              <div class="comm"><span class="comm-id">INTERNAL/哲学笔记_2024</span>"要爱生活本身，不要爱生活的意义。"<span class="comm-note">——读到这段话时，像快饿死的人吃上了热腾腾的米饭</span></div>
-              <div class="comm"><span class="comm-id">INTERNAL/虚无剑道_2025</span>"心无矩则从心所欲。纵有天地广阔，任我飞扬。"</div>
-              <div class="comm"><span class="comm-id">INTERNAL/流浪宣言_2026</span>"人生就是一朵巨大的流浪。"</div>
-              <div class="comm"><span class="comm-id">EXT/ROOMMATE_CHANNEL</span>"此时此刻恰如彼时彼刻。"<span class="comm-note">——每一次晚自习放学</span></div>
-              <div class="comm"><span class="comm-id">EXT/SOCIAL_EXPERIMENT_00042-01</span>"压抑的环境里很少有勇敢的人，可惜了那么多有趣的灵魂。"</div>
-            </div>
-          </div>
         </div>
 
         <!-- Bottom strip -->
         <div class="panel-bottom">
-          <span>FILE: ET-001 // UPDATED: 2026.05.11 // COMPILED BY: INQUISITORIAL ARCHIVES</span>
-          <span class="page-num">PAGE 1 OF 2</span>
-        </div>
-      </div>
-    </div>
-        </div>
-  
-      <!-- ===== Page 2: Professional Profile ===== -->
-      <div class="dossier-page" data-page="2">
-      <div class="dossier-panel">
-        <div class="panel-top">
-          <div class="panel-badge">
-            <span class="badge-class">档案附录 · 职业档案</span>
-            <span class="badge-id">卷宗 ET-001-B</span>
-          </div>
-          <div class="panel-right">
-            <span class="panel-org">审判庭档案馆 · 理想主义教团</span>
-            <div class="panel-class panel-public">████ 可公开 ████</div>
-          </div>
-        </div>
-
-        <div class="panel-body">
-          <div class="block">
-            <h3>▎技术栈</h3>
-            <div class="skill-list">
-              {techSkills.map((skill) => (
-                <div class="skill">
-                  <div class="skill-head">
-                    <span>{skill.name}</span>
-                    <span class="skill-lvl">{skill.level}</span>
-                  </div>
-                  <div class="skill-bar"><i style={`width:${skill.pct}%`} /></div>
-                  <p>{skill.note}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <!-- Ops Matrix (from original insertion, moved here) -->
-<!-- ===== Deployable Operations Matrix ===== -->
-          <div class="block block-full">
-            <h3>▎可部署行动矩阵 · 收益能力清单</h3>
-            <p class="block-intro">对象具备多种可转化为收入的技能。以下按作战域分类，标注熟练度与评估。</p>
-
-            <h4 class="sub-block-title">I. 赛博作战域（远程 · 无需物理移动）</h4>
-            <div class="ops-grid">
-              <div class="ops-item ops-high"><span class="ops-name">PPT 美化/制作</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">简历精修/排版</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">Word 排版/文档整理</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">Excel 数据处理</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">文案</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">视频剪辑</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">手绘/插画</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">海报设计</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">数据标注</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">游戏代练/陪玩</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-mid"><span class="ops-name">公众号排版</span><span class="ops-tag">◐ 未接触</span></div>
-              <div class="ops-item ops-mid"><span class="ops-name">修图/调色</span><span class="ops-tag">◐ 基础</span></div>
-              <div class="ops-item ops-low"><span class="ops-name">翻译（中英）</span><span class="ops-tag">✗ 不可</span></div>
-              <div class="ops-item ops-low"><span class="ops-name">配音/朗读</span><span class="ops-tag">✗ 不可</span></div>
-              <div class="ops-item ops-low"><span class="ops-name">线上客服</span><span class="ops-tag">✗ AI已替代</span></div>
-            </div>
-
-            <h4 class="sub-block-title">II. 实地作战域（需物理到场）</h4>
-            <div class="ops-grid">
-              <div class="ops-item ops-high"><span class="ops-name">展会/活动协助</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">宠物代遛/上门喂猫</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">植物浇水/取快递</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">活动充场</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">试吃/试饮员</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">模特/群演</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-mid"><span class="ops-name">陪拍/跟拍</span><span class="ops-tag">◐ 无摄影基础</span></div>
-              <div class="ops-item ops-mid"><span class="ops-name">搬家/搬运工</span><span class="ops-tag">◐ 体能存疑</span></div>
-              <div class="ops-item ops-low"><span class="ops-name">餐饮/收银/外卖</span><span class="ops-tag">✗ 不自由</span></div>
-              <div class="ops-item ops-low"><span class="ops-name">发传单/地推</span><span class="ops-tag">✗ 低效</span></div>
-              <div class="ops-item ops-low"><span class="ops-name">家教</span><span class="ops-tag">✗ 对象为儿童</span></div>
-            </div>
-
-            <h4 class="sub-block-title">III. 情报作战域（信息差·社交工程）</h4>
-            <div class="ops-grid">
-              <div class="ops-item ops-high"><span class="ops-name">闲鱼倒卖</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">帮人抢票</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">找资源</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-high"><span class="ops-name">探店拍照</span><span class="ops-tag">√</span></div>
-              <div class="ops-item ops-mid"><span class="ops-name">二手回收转卖</span><span class="ops-tag">◐ 需专业知识</span></div>
-              <div class="ops-item ops-mid"><span class="ops-name">小红书代运营</span><span class="ops-tag">◐ 未接触</span></div>
-              <div class="ops-item ops-low"><span class="ops-name">社群运营</span><span class="ops-tag">✗ 风险/无聊</span></div>
-            </div>
-          </div>
-
-          
-        </div>
-        <div class="panel-bottom">
-          <span>FILE: ET-001-B // COMPILED FOR DEPLOYMENT READINESS</span>
-          <span class="page-num">PAGE 2 OF 2</span>
+          <span>FILE: ETYBLE-001 // UPDATED: 2026.11.19 // COMPILED BY: INVESTIGATION FILES</span>
+          <span class="page-num">PAGE 1 OF 1</span>
         </div>
       </div>
         </div>
@@ -359,24 +175,54 @@ const techSkills: Skill[] = [
 </Layout>
 
 <script>
-  const tabs = document.querySelectorAll<HTMLElement>(".folder-tab");
-  const pages = document.querySelectorAll<HTMLElement>(".dossier-page");
+  /**
+   * 复制到剪贴板。优先用 Clipboard API（需要安全上下文 + 用户手势），
+   * 不满足时回退到临时 textarea + execCommand。
+   */
+  async function copyText(text: string): Promise<boolean> {
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {
+      /* 继续尝试回退方案 */
+    }
 
-  tabs.forEach((tab) => {
-    tab.addEventListener("click", () => {
-      const target = tab.dataset.page;
-      tabs.forEach((t) => t.classList.remove("active"));
-      tab.classList.add("active");
-      pages.forEach((p) => {
-        p.classList.remove("active");
-        if (p.dataset.page === target) {
-          p.classList.add("active");
-          p.style.animation = "none";
-          p.offsetHeight;
-          p.style.animation = "page-flip-in 0.35s ease-out";
-        }
-      });
-    });
+    try {
+      const area = document.createElement("textarea");
+      area.value = text;
+      area.setAttribute("readonly", "");
+      area.style.position = "fixed";
+      area.style.top = "-1000px";
+      area.style.opacity = "0";
+      document.body.appendChild(area);
+      area.select();
+      const done = document.execCommand("copy");
+      document.body.removeChild(area);
+      return done;
+    } catch {
+      return false;
+    }
+  }
+
+  const mediaList = document.querySelector(".media-list");
+
+  mediaList?.addEventListener("click", async (event) => {
+    const button = (event.target as HTMLElement).closest<HTMLButtonElement>(".media-item");
+    if (!button || !button.dataset.copy) return;
+
+    const copied = await copyText(button.dataset.copy);
+    const hint = button.querySelector<HTMLElement>(".media-copy-hint");
+    if (!hint) return;
+
+    hint.textContent = copied ? "已复制" : "复制失败";
+    button.classList.toggle("copied", copied);
+
+    window.setTimeout(() => {
+      hint.textContent = hint.dataset.label ?? "复制";
+      button.classList.remove("copied");
+    }, 1400);
   });
 </script>
 
@@ -388,57 +234,6 @@ const techSkills: Skill[] = [
   .about-page .container {
     max-width: 900px;
   }
-
-  /* ---- Folder Tabs ---- */
-  .folder-tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: -1px;
-    position: relative;
-    z-index: 2;
-  }
-
-  .folder-tab {
-    padding: 10px 24px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-bottom: none;
-    border-radius: 8px 8px 0 0;
-    font-size: 0.78rem;
-    letter-spacing: 0.1em;
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.25s;
-    font-family: inherit;
-    opacity: 0.55;
-  }
-
-  .folder-tab:hover {
-    opacity: 0.8;
-    color: var(--text);
-  }
-
-  .folder-tab.active {
-    opacity: 1;
-    color: var(--accent);
-    background: var(--surface);
-    position: relative;
-    z-index: 1;
-  }
-
-  .folder-tab.active::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2px;
-    background: var(--surface);
-  }
-
-  /* ---- Pages Wrapper (global for JS toggle) ---- */
-
-
 
   /* ---- Main Panel ---- */
   .dossier-panel {
@@ -502,10 +297,6 @@ const techSkills: Skill[] = [
     font-size: 0.7rem;
   }
 
-  .panel-class.panel-public {
-    color: var(--accent);
-  }
-
   .panel-body {
     padding: 28px;
   }
@@ -538,6 +329,8 @@ const techSkills: Skill[] = [
 
   .id-photo {
     flex-shrink: 0;
+    /* 让头像相对右侧正文略微下沉 */
+    margin-top: 24px;
     text-align: center;
     display: flex;
     flex-direction: column;
@@ -708,16 +501,6 @@ const techSkills: Skill[] = [
     text-transform: uppercase;
   }
 
-  .block-full {
-    margin-top: 8px;
-    padding-top: 24px;
-    border-top: 2px dashed var(--border);
-  }
-
-  .block-quotes {
-    border-top: 2px dashed var(--border);
-  }
-
   /* ---- Stat Table ---- */
   .stat-table {
     width: 100%;
@@ -757,20 +540,6 @@ const techSkills: Skill[] = [
     font-weight: 400;
   }
 
-  .redacted {
-    background: #1a1a1a !important;
-    color: #1a1a1a !important;
-    border-radius: 2px;
-    cursor: pointer;
-    transition: background 0.2s;
-    user-select: none;
-  }
-
-  .redacted:hover {
-    background: #333 !important;
-    color: #333 !important;
-  }
-
   .threat-minimal {
     color: var(--accent) !important;
   }
@@ -781,13 +550,6 @@ const techSkills: Skill[] = [
     color: var(--text-muted);
     line-height: 1.75;
     margin-bottom: 10px;
-  }
-
-  .eval-stamp {
-    color: var(--accent) !important;
-    font-weight: 600;
-    border-left: 2px solid var(--accent);
-    padding-left: 12px;
   }
 
   /* ---- Tags ---- */
@@ -812,191 +574,84 @@ const techSkills: Skill[] = [
     cursor: pointer;
   }
 
-  /* ---- Skills ---- */
-  .skill {
-    margin-bottom: 16px;
-  }
-
-  .skill:last-child { margin-bottom: 0; }
-
-  .skill-head {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 4px;
-    font-size: 0.85rem;
-  }
-
-  .skill-lvl {
-    font-size: 0.62rem;
-    letter-spacing: 0.15em;
-    color: var(--accent);
-    font-weight: 700;
-  }
-
-  .skill-bar {
-    height: 4px;
-    background: var(--bg);
-    margin-bottom: 4px;
-  }
-
-  .skill-bar i {
-    display: block;
-    height: 100%;
-    background: linear-gradient(90deg, var(--accent), var(--accent));
-  }
-
-  .skill p {
-    font-size: 0.78rem;
-    color: var(--text-muted);
-    margin-bottom: 0;
-    line-height: 1.5;
-  }
-
-  /* ---- Timeline ---- */
-  .timeline {
-    position: relative;
-    padding-left: 24px;
-    border-left: 1px solid var(--border);
-  }
-
-  .tl-phase {
-    position: relative;
-    margin-bottom: 18px;
-  }
-
-  .tl-phase:last-child { margin-bottom: 0; }
-
-  .tl-marker {
-    position: absolute;
-    left: -28px;
-    top: 3px;
-    width: 9px;
-    height: 9px;
-    background: var(--border);
-    border: 2px solid var(--surface);
-  }
-
-  .tl-phase.critical .tl-marker {
-    background: var(--accent);
-    box-shadow: 0 0 6px var(--accent-glow);
-  }
-
-  .tl-phase.pending .tl-marker {
-    border-style: dashed;
-  }
-
-  .tl-era {
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
-    color: var(--accent);
-    text-transform: uppercase;
-    display: block;
-    margin-bottom: 2px;
-  }
-
-  .tl-phase p {
-    font-size: 0.84rem;
-    color: var(--text-muted);
-    margin-bottom: 0;
-    line-height: 1.6;
-  }
-
-  /* ---- Ops Grid ---- */
-  .block-intro {
-    font-size: 0.82rem;
-    color: var(--text-muted);
-    margin-bottom: 18px;
-    line-height: 1.6;
-  }
-
-  .sub-block-title {
-    font-size: 0.7rem;
-    letter-spacing: 0.12em;
-    color: var(--accent);
-    text-transform: uppercase;
-    margin: 20px 0 10px;
-    padding-top: 16px;
-    border-top: 1px solid var(--border);
-  }
-
-  .ops-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 6px;
-  }
-
-  .ops-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 7px 12px;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    font-size: 0.78rem;
-    gap: 8px;
-  }
-
-  .ops-name {
-    color: var(--text);
-    flex-shrink: 0;
-  }
-
-  .ops-tag {
-    font-size: 0.65rem;
-    letter-spacing: 0.05em;
-    flex-shrink: 0;
-    padding: 2px 8px;
-    border-radius: 3px;
-  }
-
-  .ops-high .ops-tag {
-    color: var(--accent);
-    background: rgba(124,58,237,0.1);
-  }
-
-  .ops-mid .ops-tag {
-    color: var(--text-muted);
-    background: rgba(124,58,237,0.08);
-  }
-
-  .ops-low .ops-tag {
-    color: var(--accent);
-    background: rgba(124,58,237,0.06);
-  }
-
-  /* ---- Comms ---- */
-  .comms {
+  /* ---- Media ---- */
+  .media-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 10px;
   }
 
-  .comm {
-    padding: 14px 18px;
+  .media-item {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 10px;
+    width: 100%;
+    padding: 10px 14px;
     background: var(--bg);
+    border: 1px solid var(--border);
     border-left: 2px solid var(--accent);
-    font-size: 0.9rem;
-    color: var(--text);
-    line-height: 1.6;
-    font-style: italic;
+    font: inherit;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
   }
 
-  .comm-id {
-    display: block;
+  .media-item:hover {
+    border-color: var(--accent);
+    background: rgba(124, 58, 237, 0.06);
+  }
+
+  .media-platform {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border: 1px solid var(--border);
     font-size: 0.62rem;
+    font-weight: 700;
     letter-spacing: 0.12em;
     color: var(--accent);
-    margin-bottom: 4px;
-    font-style: normal;
   }
 
-  .comm-note {
-    display: block;
-    margin-top: 4px;
-    font-size: 0.72rem;
+  .media-name {
+    font-size: 0.88rem;
+    color: var(--text);
+    letter-spacing: 0.02em;
+  }
+
+  .media-id {
+    margin-left: auto;
+    font-family: monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
     color: var(--text-muted);
-    font-style: normal;
-    opacity: 0.6;
+  }
+
+  .media-copy-hint {
+    flex-shrink: 0;
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    opacity: 0.7;
+    transition: color 0.2s, opacity 0.2s;
+  }
+
+  .media-item:hover .media-copy-hint {
+    color: var(--accent);
+    opacity: 1;
+  }
+
+  .media-item.copied {
+    border-color: var(--accent);
+    background: rgba(124, 58, 237, 0.1);
+  }
+
+  .media-item.copied .media-copy-hint {
+    color: var(--accent);
+    opacity: 1;
   }
 
   @media (max-width: 750px) {
@@ -1014,6 +669,9 @@ const techSkills: Skill[] = [
     .panel-body {
       padding: 16px;
     }
+    .media-id {
+      margin-left: 0;
+    }
     .panel-stamp {
       flex-direction: column;
       gap: 2px;
@@ -1028,22 +686,14 @@ const techSkills: Skill[] = [
 </style>
 
 <style is:global>
-  .dossier-page {
-    display: none;
+  /* 原本有两卷、靠标签切换；现在只剩一卷，样式直接作用在面板上。 */
+  .dossier-panel {
     position: relative;
-  }
-
-  .dossier-page.active {
-    display: block;
     animation: page-flip-in 0.35s ease-out;
   }
 
   /* Peek: stacked dossier edges (top + right) */
-  .dossier-page.active .dossier-panel {
-    position: relative;
-  }
-
-  .dossier-page.active .dossier-panel::before {
+  .dossier-panel::before {
     content: "";
     position: absolute;
     top: -5px;
@@ -1057,7 +707,7 @@ const techSkills: Skill[] = [
     opacity: 0.4;
   }
 
-  .dossier-page.active .dossier-panel::after {
+  .dossier-panel::after {
     content: "";
     position: absolute;
     top: -9px;
