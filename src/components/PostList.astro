@@ -3,11 +3,11 @@ import { shortDate } from "../utils/format";
 import { withBase } from "../utils/url";
 
 type Props = {
-  /** Published entries to render, newest first. */
+  /** 要渲染的已发布条目，最新在前。 */
   posts: { id: string; data: { date: Date; title: string; description?: string } }[];
-  /** Collection segment used to build each article URL. */
+  /** 用于拼出文章 URL 的集合路径段。 */
   section: "blog" | "writings";
-  /** Shown when there is nothing to list. */
+  /** 没有内容时显示的文案。 */
   empty: string;
 }
 

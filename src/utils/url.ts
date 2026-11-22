@@ -1,20 +1,19 @@
 /**
- * Site-root URL helpers.
+ * 站点根路径工具。
  *
- * `import.meta.env.BASE_URL` is the deployment root, injected at build time:
- * GitHub Pages uses `/myblog`, Cloudflare Pages uses `/`. Astro only rewrites
- * asset URLs for you — plain `<a href>` values are emitted verbatim — so every
- * internal link has to be prefixed with the base itself.
+ * `import.meta.env.BASE_URL` 是构建期注入的部署根路径：
+ * GitHub Pages 用 `/myblog`，Cloudflare Pages 用 `/`。Astro 只会改写静态资源的
+ * URL，普通的 `<a href>` 会原样输出，因此每个站内链接都要自己补上根路径。
  *
- * These helpers are the single place that logic lives. They normalise the base
- * so the result is correct whether or not it carries a trailing slash.
+ * 这套逻辑只保留在本文件里；下面的实现会归一化根路径，使它带不带末尾斜杠
+ * 都能得到正确结果。
  */
 
-/** Deployment root without a trailing slash: `/` or `/myblog`. */
-export const base = import.meta.env.BASE_URL.replace(/\/+$/, "");
+/** 去掉末尾斜杠的部署根路径：`/` 或 `/myblog`。 */
+const base = import.meta.env.BASE_URL.replace(/\/+$/, "");
 
 /**
- * Resolves a site-root-relative path against the deployment root.
+ * 把站内相对路径解析到部署根路径之下。
  *
  *   withBase("/blog")            -> "/myblog/blog"  |  "/blog"
  *   withBase("/blog/first")      -> "/myblog/blog/first"

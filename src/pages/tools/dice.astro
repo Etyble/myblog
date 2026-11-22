@@ -1,0 +1,512 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { withBase } from "../../utils/url";
+import {
+  STANDARD_DICE,
+  MAX_DICE_PER_ROLL,
+  MIN_CUSTOM_SIDES,
+  MAX_CUSTOM_SIDES,
+} from "../../data/dice.ts";
+---
+
+<Layout title="骰子 — MyWorld" description="d4 到 d100 的标准骰，支持多骰同掷与自定义面数。">
+  <section class="section">
+    <div class="container">
+      <a class="dice-back" href={withBase("/tools")}>← 工具</a>
+      <h1 class="page-title">骰子</h1>
+      <p class="page-desc">
+        标准七件套加一颗自定义骰，支持多骰同掷。点数取自浏览器的密码学随机源。
+      </p>
+
+      <!-- 选择骰子 -->
+      <div class="dice-panel">
+        <div class="dice-head">
+          <label class="dice-label" for="dice-count">数量</label>
+          <input
+            id="dice-count"
+            class="dice-input"
+            type="number"
+            min="1"
+            max={MAX_DICE_PER_ROLL}
+            value="1"
+          />
+          <span class="dice-hint">1–{MAX_DICE_PER_ROLL} 颗</span>
+        </div>
+
+        <div class="dice-grid" id="dice-grid">
+          {
+            STANDARD_DICE.map((die) => (
+              <button
+                type="button"
+                class="dice-btn"
+                data-sides={die.sides}
+                data-percentile={die.percentile ? "1" : "0"}
+              >
+                <span class="dice-btn-label">{die.label}</span>
+                <span class="dice-btn-name">{die.name}</span>
+                <span class="dice-btn-shape">{die.shape}</span>
+              </button>
+            ))
+          }
+
+          <!-- 自定义骰：与七件套同排，面数在卡片内填写 -->
+          <div class="dice-btn dice-custom">
+            <div class="dice-custom-row">
+              <span class="dice-btn-label">d</span>
+              <input
+                id="custom-sides"
+                class="dice-side-input"
+                type="number"
+                min={MIN_CUSTOM_SIDES}
+                max={MAX_CUSTOM_SIDES}
+                value="7"
+                aria-label="自定义面数"
+              />
+            </div>
+            <span class="dice-btn-shape">自定义面数</span>
+            <button id="custom-roll" class="dice-custom-roll" type="button">掷</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 本次结果 -->
+      <div class="dice-panel" id="result-panel" hidden>
+        <div class="dice-result-total" id="result-total" aria-live="polite"></div>
+        <div class="dice-pills" id="result-pills"></div>
+        <div class="dice-detail" id="result-detail"></div>
+      </div>
+
+      <!-- 历史记录 -->
+      <div class="dice-panel">
+        <div class="dice-panel-head">
+          <h2 class="dice-panel-title">历史记录</h2>
+          <button id="clear-history" class="btn-secondary" type="button">清空</button>
+        </div>
+        <ol class="dice-history" id="history"></ol>
+        <p class="dice-hint">保存在本标签页：刷新仍在，关闭标签页后清空。</p>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<style is:global>
+  /* 结果与历史都是脚本注入的节点，拿不到 Astro 的样式作用域属性，
+     所以本页样式统一做成全局，并用 dice- 前缀避免影响其他页面。 */
+  .dice-back {
+    display: inline-block;
+    font-size: 0.85rem;
+    margin-bottom: 20px;
+  }
+
+  .dice-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  .dice-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .dice-panel-title {
+    font-size: 0.95rem;
+    color: var(--accent);
+  }
+
+  .dice-head {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px 10px;
+    margin-bottom: 16px;
+  }
+
+  .dice-label {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  .dice-input {
+    width: 84px;
+    padding: 6px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit;
+    font-size: 0.85rem;
+  }
+
+  .dice-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .dice-hint {
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  .dice-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 10px;
+  }
+
+  .dice-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 12px 8px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s, transform 0.15s;
+  }
+
+  .dice-btn:hover {
+    border-color: var(--accent);
+    background: rgba(124, 58, 237, 0.08);
+  }
+
+  .dice-btn:active {
+    transform: translateY(1px);
+  }
+
+  .dice-btn-label {
+    font-family: monospace;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+  }
+
+  .dice-btn-name {
+    font-size: 0.8rem;
+  }
+
+  .dice-btn-shape {
+    font-size: 0.66rem;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.4;
+  }
+
+  .dice-custom {
+    gap: 4px;
+    cursor: default;
+  }
+
+  .dice-custom-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .dice-side-input {
+    width: 62px;
+    padding: 2px 6px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: monospace;
+    font-size: 0.9rem;
+    text-align: center;
+  }
+
+  .dice-side-input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .dice-custom-roll {
+    margin-top: 6px;
+    padding: 4px 14px;
+    background: transparent;
+    border: 1px solid var(--accent);
+    border-radius: 999px;
+    color: var(--accent);
+    font-family: inherit;
+    font-size: 0.72rem;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .dice-custom-roll:hover {
+    background: var(--accent);
+    color: var(--bg);
+  }
+
+  .dice-result-total {
+    font-family: monospace;
+    font-size: 2.4rem;
+    font-weight: 700;
+    color: var(--accent);
+    text-align: center;
+    margin-bottom: 14px;
+    letter-spacing: 0.02em;
+  }
+
+  .dice-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .dice-pill {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    padding: 6px 10px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: monospace;
+    font-size: 0.95rem;
+    color: var(--text);
+  }
+
+  .dice-detail {
+    margin-top: 12px;
+    font-size: 0.76rem;
+    color: var(--text-muted);
+    text-align: center;
+    line-height: 1.7;
+  }
+
+  .dice-history {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  .dice-history-item {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    padding: 8px 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 0.8rem;
+  }
+
+  .dice-history-label {
+    flex-shrink: 0;
+    font-family: monospace;
+    color: var(--accent);
+  }
+
+  .dice-history-values {
+    flex: 1;
+    color: var(--text-muted);
+    word-break: break-all;
+  }
+
+  .dice-history-total {
+    flex-shrink: 0;
+    font-family: monospace;
+    color: var(--text);
+  }
+
+  .dice-history-empty {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  @media (max-width: 640px) {
+    .dice-panel {
+      padding: 16px;
+    }
+
+    .dice-input {
+      width: 70px;
+    }
+
+    .dice-result-total {
+      font-size: 2rem;
+    }
+  }
+</style>
+
+<script>
+  import { MAX_DICE_PER_ROLL, MIN_CUSTOM_SIDES, MAX_CUSTOM_SIDES, HISTORY_LIMIT } from "../../data/dice.ts";
+
+  const HISTORY_KEY = "dice-history-v1";
+
+  const diceGrid = document.getElementById("dice-grid") as HTMLElement;
+  const diceCount = document.getElementById("dice-count") as HTMLInputElement;
+  const resultPanel = document.getElementById("result-panel") as HTMLElement;
+  const resultTotal = document.getElementById("result-total") as HTMLElement;
+  const resultPills = document.getElementById("result-pills") as HTMLElement;
+  const resultDetail = document.getElementById("result-detail") as HTMLElement;
+  const customSides = document.getElementById("custom-sides") as HTMLInputElement;
+  const customRoll = document.getElementById("custom-roll") as HTMLButtonElement;
+  const historyEl = document.getElementById("history") as HTMLElement;
+  const clearHistory = document.getElementById("clear-history") as HTMLButtonElement;
+
+  interface DieRoll {
+    value: number;
+    /** 百分骰的十位与个位说明 */
+    detail?: string;
+  }
+
+  interface HistoryRecord {
+    /** 形如 "2d6" */
+    label: string;
+    values: number[];
+    total: number;
+    rolledAt: number;
+  }
+
+  /**
+   * 取 [1, sides] 的整数。
+   * 用拒绝采样丢弃超出整倍数区间的高位值，避免 `% sides` 带来的取模偏差。
+   */
+  function randomFace(sides: number): number {
+    const range = 0x100000000;
+    const limit = Math.floor(range / sides) * sides;
+    const buffer = new Uint32Array(1);
+    let value = 0;
+    do {
+      window.crypto.getRandomValues(buffer);
+      value = buffer[0];
+    } while (value >= limit);
+    return (value % sides) + 1;
+  }
+
+  /** 百分骰：两颗 d10，10 记作 0；两颗都是 0 时结果为 100。 */
+  function rollPercentile(): DieRoll {
+    const tens = randomFace(10) % 10;
+    const units = randomFace(10) % 10;
+    const composed = tens * 10 + units;
+    return {
+      value: composed === 0 ? 100 : composed,
+      detail: `十位 ${tens} · 个位 ${units}`,
+    };
+  }
+
+  function rollDice(sides: number, count: number, percentile: boolean): DieRoll[] {
+    const rolls: DieRoll[] = [];
+    for (let i = 0; i < count; i++) {
+      rolls.push(percentile ? rollPercentile() : { value: randomFace(sides) });
+    }
+    return rolls;
+  }
+
+  /** 读取数量输入，夹到合法范围后回写，让用户看到被修正的值。 */
+  function readAmount(input: HTMLInputElement, min: number, max: number): number {
+    const parsed = Number.parseInt(input.value, 10);
+    const clamped = Number.isNaN(parsed) ? min : Math.min(max, Math.max(min, parsed));
+    input.value = String(clamped);
+    return clamped;
+  }
+
+  function loadHistory(): HistoryRecord[] {
+    try {
+      const raw = sessionStorage.getItem(HISTORY_KEY);
+      if (!raw) return [];
+      const parsed = JSON.parse(raw) as HistoryRecord[];
+      return Array.isArray(parsed) ? parsed.slice(0, HISTORY_LIMIT) : [];
+    } catch {
+      return [];
+    }
+  }
+
+  function saveHistory(records: HistoryRecord[]): void {
+    try {
+      sessionStorage.setItem(HISTORY_KEY, JSON.stringify(records));
+    } catch {
+      /* 隐私模式下写入可能失败，忽略即可 */
+    }
+  }
+
+  let history: HistoryRecord[] = loadHistory();
+
+  function renderHistory(): void {
+    if (history.length === 0) {
+      historyEl.innerHTML = '<li class="dice-history-empty">还没有记录。</li>';
+      return;
+    }
+    // 记录里的数值全部来自本页计算，不含用户自由输入，可直接拼接。
+    historyEl.innerHTML = history
+      .map(
+        (record) =>
+          '<li class="dice-history-item">' +
+          `<span class="dice-history-label">${record.label}</span>` +
+          `<span class="dice-history-values">${record.values.join("、")}</span>` +
+          `<span class="dice-history-total">${record.total}</span>` +
+          "</li>",
+      )
+      .join("");
+  }
+
+  function showResult(label: string, rolls: DieRoll[]): void {
+    const total = rolls.reduce((sum, roll) => sum + roll.value, 0);
+
+    resultTotal.textContent = String(total);
+    resultPills.innerHTML = rolls
+      .map((roll) => `<span class="dice-pill">${roll.value}</span>`)
+      .join("");
+    resultDetail.textContent = rolls
+      .map((roll, index) => (roll.detail ? `第 ${index + 1} 颗：${roll.detail}` : ""))
+      .filter(Boolean)
+      .join("　");
+    resultPanel.hidden = false;
+
+    history = [{ label, values: rolls.map((roll) => roll.value), total, rolledAt: Date.now() }, ...history].slice(
+      0,
+      HISTORY_LIMIT,
+    );
+    saveHistory(history);
+    renderHistory();
+  }
+
+  diceGrid.addEventListener("click", (event) => {
+    const card = (event.target as HTMLElement).closest<HTMLElement>(".dice-btn");
+    // 自定义卡片没有固定面数，由它自己的「掷」按钮处理。
+    if (!card || !card.dataset.sides) return;
+
+    const sides = Number(card.dataset.sides);
+    const percentile = card.dataset.percentile === "1";
+    const count = readAmount(diceCount, 1, MAX_DICE_PER_ROLL);
+
+    showResult(`${count}d${sides}`, rollDice(sides, count, percentile));
+  });
+
+  customRoll.addEventListener("click", () => {
+    // 数量沿用顶部的数量输入，面数取自自定义卡片里的输入框。
+    const sides = readAmount(customSides, MIN_CUSTOM_SIDES, MAX_CUSTOM_SIDES);
+    const count = readAmount(diceCount, 1, MAX_DICE_PER_ROLL);
+
+    showResult(`${count}d${sides}`, rollDice(sides, count, false));
+  });
+
+  clearHistory.addEventListener("click", () => {
+    history = [];
+    saveHistory(history);
+    renderHistory();
+  });
+
+  renderHistory();
+</script>

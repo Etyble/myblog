@@ -1,15 +1,14 @@
 import { defineConfig } from "astro/config";
 
-// This site ships to two hosts with different roots. Cloudflare Pages sets
-// CF_PAGES=1 during its build; GitHub Actions does not.
+// 本站要发布到两个根路径不同的主机。Cloudflare Pages 构建时会设置
+// CF_PAGES=1，GitHub Actions 则不会。
 //
 //   GitHub Pages  https://etyble.github.io/myblog  ->  site + base "/myblog"
-//   Cloudflare    https://<project>.pages.dev      ->  root, no base
+//   Cloudflare    https://<project>.pages.dev      ->  根路径，不设 base
 //
-// When running on Cloudflare, set CF_PAGES=1 in the project's build settings,
-// otherwise the GitHub values are used and every link would carry a stray
-// "/myblog" prefix. Pinning the target with an explicit env var is the robust
-// alternative if that ever becomes a problem.
+// 部署到 Cloudflare 时，需在项目的构建设置里设置 CF_PAGES=1；否则会套用
+// GitHub 侧的值，所有链接都会多出一段 "/myblog"。若这一点变得不可靠，
+// 改用显式环境变量固定目标更稳妥。
 const isCloudflare = !!process.env.CF_PAGES;
 
 const site = process.env.PUBLIC_SITE_URL ?? (isCloudflare ? undefined : "https://etyble.github.io");

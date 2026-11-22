@@ -58,6 +58,3 @@ export const CHOICES: Choice[] = questionsJson.select as Choice[];
 export const DOMAINS: Domain[] = reportJson.domains as Domain[];
 export const FACETS: Facet[] = reportJson.facets as Facet[];
 export const SCORING: ScoringRules = reportJson.scoring as ScoringRules;
-
-/** 题目按维度分组，便于分页与进度显示。 */
-export const QUESTIONS_PER_FACET = 4;

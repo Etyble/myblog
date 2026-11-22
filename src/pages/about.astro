@@ -2,8 +2,8 @@
 import Layout from "../layouts/Layout.astro";
 import { withBase } from "../utils/url";
 
-// `pct` drives the bar fill; `score`/`max` drive the printed number. They are
-// deliberately independent — the dossier is meant to read as inconsistent.
+// `pct` 控制条形填充，`score`/`max` 控制右侧数字；两者刻意独立——
+// 这份档案就是要读起来自相矛盾。
 type Stat = { label: string; pct: number; score: number; max: number };
 
 const coreStats: Stat[] = [
@@ -17,10 +17,10 @@ const coreStats: Stat[] = [
   <section class="about-page">
     <div class="container">
 
-      <!-- ===== Main Dossier ===== -->
+      <!-- ===== 主档案 ===== -->
       <div class="dossier-panel">
 
-        <!-- Top strip: header -->
+        <!-- 顶部条：表头 -->
         <div class="panel-top">
           <div class="panel-badge">
             <span class="badge-class">一级权限</span>
@@ -32,9 +32,9 @@ const coreStats: Stat[] = [
           </div>
         </div>
 
-        <!-- Body -->
+        <!-- 正文 -->
         <div class="panel-body">
-          <!-- Photo + Core -->
+          <!-- 照片 + 核心数据 -->
           <div class="id-section">
             <div class="id-photo">
               <div class="photo-placeholder">
@@ -61,11 +61,11 @@ const coreStats: Stat[] = [
             </div>
           </div>
 
-          <!-- Two column body -->
+          <!-- 双栏正文 -->
           <div class="dossier-body">
-            <!-- LEFT: Stats -->
+            <!-- 左栏：数据 -->
             <div class="col-left">
-              <!-- Vital Stats -->
+              <!-- 基础数据 -->
               <div class="block">
                 <h3>▎基础数据</h3>
                 <table class="stat-table">
@@ -81,7 +81,7 @@ const coreStats: Stat[] = [
                 </table>
               </div>
 
-              <!-- Equipment -->
+              <!-- 装备槽 -->
               <div class="block">
                 <h3>▎装备槽</h3>
                 <table class="stat-table">
@@ -93,7 +93,7 @@ const coreStats: Stat[] = [
                 </table>
               </div>
 
-              <!-- Affiliations -->
+              <!-- 已知关联 -->
               <div class="block">
                 <h3>▎已知关联</h3>
                 <table class="stat-table">
@@ -108,9 +108,9 @@ const coreStats: Stat[] = [
               </div>
             </div>
 
-            <!-- RIGHT: Lore -->
+            <!-- 右栏：背景 -->
             <div class="col-right">
-              <!-- Psych Evaluation -->
+              <!-- 阶段摘要 -->
               <div class="block">
                 <h3>▎阶段摘要</h3>
                 <p>童年阶段，个体智识未全，误入“完美主义”陷阱，引发强迫性思维及焦虑症状，纷扰至今。</p>
@@ -126,7 +126,7 @@ const coreStats: Stat[] = [
                 <p><strong>东方歌未竟，敢为天下先！</strong></p>
               </div>
 
-              <!-- Tags -->
+              <!-- 标签 -->
               <div class="block">
                 <h3>▎标签</h3>
                 <div class="tag-set">
@@ -164,7 +164,7 @@ const coreStats: Stat[] = [
 
         </div>
 
-        <!-- Bottom strip -->
+        <!-- 底部条 -->
         <div class="panel-bottom">
           <span>FILE: ETYBLE-001 // UPDATED: 2026.11.19 // COMPILED BY: INVESTIGATION FILES</span>
           <span class="page-num">PAGE 1 OF 1</span>
@@ -235,7 +235,7 @@ const coreStats: Stat[] = [
     max-width: 900px;
   }
 
-  /* ---- Main Panel ---- */
+  /* ---- 主面板 ---- */
   .dossier-panel {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -317,7 +317,7 @@ const coreStats: Stat[] = [
     font-family: monospace;
   }
 
-  /* ---- ID Section ---- */
+  /* ---- 身份区 ---- */
   .id-section {
     display: flex;
     align-items: flex-start;
@@ -355,8 +355,7 @@ const coreStats: Stat[] = [
     box-shadow: 0 0 0 3px var(--bg), 0 0 0 4px var(--border);
   }
 
-  /* If the photo fails to load, the alt text becomes the placeholder — no
-     inline onerror handler needed. */
+  /* 照片加载失败时，alt 文本会变成占位符——不需要内联 onerror 处理。 */
   .photo-placeholder :global(img) {
     width: 100%;
     height: 100%;
@@ -481,14 +480,14 @@ const coreStats: Stat[] = [
     text-align: right;
   }
 
-  /* ---- Body Columns ---- */
+  /* ---- 双栏正文 ---- */
   .dossier-body {
     display: grid;
     grid-template-columns: 260px 1fr;
     gap: 36px;
   }
 
-  /* ---- Blocks ---- */
+  /* ---- 区块 ---- */
   .block {
     margin-bottom: 24px;
   }
@@ -501,7 +500,7 @@ const coreStats: Stat[] = [
     text-transform: uppercase;
   }
 
-  /* ---- Stat Table ---- */
+  /* ---- 数据表 ---- */
   .stat-table {
     width: 100%;
     border-collapse: collapse;
@@ -544,7 +543,7 @@ const coreStats: Stat[] = [
     color: var(--accent) !important;
   }
 
-  /* ---- Psych ---- */
+  /* ---- 心理论述 ---- */
   .block p {
     font-size: 0.85rem;
     color: var(--text-muted);
@@ -552,7 +551,7 @@ const coreStats: Stat[] = [
     margin-bottom: 10px;
   }
 
-  /* ---- Tags ---- */
+  /* ---- 标签 ---- */
   .tag-set {
     display: flex;
     flex-wrap: wrap;
@@ -574,7 +573,7 @@ const coreStats: Stat[] = [
     cursor: pointer;
   }
 
-  /* ---- Media ---- */
+  /* ---- 媒体媒介 ---- */
   .media-list {
     list-style: none;
     padding: 0;
@@ -692,7 +691,7 @@ const coreStats: Stat[] = [
     animation: page-flip-in 0.35s ease-out;
   }
 
-  /* Peek: stacked dossier edges (top + right) */
+  /* 叠边效果：档案上下与右侧露出的边缘 */
   .dossier-panel::before {
     content: "";
     position: absolute;

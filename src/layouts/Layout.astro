@@ -8,7 +8,7 @@ type Props = {
 };
 
 const {
-  title = "Etyble的小窝",
+  title = "Etyble's Blog",
   description = "Etyble 的个人网站 — 设计、思考与私货。",
 } = Astro.props;
 
@@ -22,9 +22,8 @@ const home = withBase("/");
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href={withBase("/icon.svg")} />
     <meta name="description" content={description} />
-    <!-- Deliberate: this site is not meant to be indexed. If you ever want the
-         blog posts to show up in search engines, remove this line and the
-         matching `Disallow` rule in public/robots.txt. -->
+    <!-- 有意为之：本站不打算被搜索引擎收录。若以后想让文章被收录，
+         删掉这一行，以及 public/robots.txt 里对应的 `Disallow` 规则。 -->
     <meta name="robots" content="noindex, nofollow" />
     <title>{title}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -37,7 +36,7 @@ const home = withBase("/");
   <body>
     <header class="nav">
       <div class="container nav-inner">
-        <a href={home} class="logo">Etyble的档案馆</a>
+        <a href={home} class="logo">Etyble's Blog</a>
         <nav>
           <a href={home}>主页</a>
           <a href={withBase("/blog")}>博客</a>

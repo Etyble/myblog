@@ -39,8 +39,3 @@ export const SELF_NORMS: Baseline = {
     recordedAt: "2026-09-16",
   },
 };
-
-/** 是否已录入基准数据。 */
-export function hasBaseline(): boolean {
-  return SELF_NORMS.baseline !== null;
-}

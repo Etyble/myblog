@@ -11,8 +11,8 @@ entries.forEach((e) => {
 });
 const catNames = Object.keys(categories).sort();
 
-// Astro 7 removed `entry.render()`; the loader renders each entry up front, so
-// the client-side switcher can swap pre-rendered HTML blocks.
+// Astro 7 移除了 `entry.render()`；加载器已提前渲染好每个条目，
+// 客户端的切换逻辑只需替换预渲染好的 HTML 块。
 const htmlById = new Map<string, string>();
 for (const e of entries) {
   htmlById.set(e.id, e.rendered?.html ?? "");
@@ -22,7 +22,7 @@ for (const e of entries) {
 <Layout title="设定集 — MyWorld" description="世界观、种族、地理与历史设定。">
   <section class="wv-page">
     <div class="wv-layout">
-      <!-- ===== Sidebar ===== -->
+      <!-- ===== 侧栏 ===== -->
       <aside class="wv-sidebar">
         <h2>设定集</h2>
         {catNames.map((cat) => (
@@ -43,7 +43,7 @@ for (const e of entries) {
         ))}
       </aside>
 
-      <!-- ===== Detail Panel ===== -->
+      <!-- ===== 详情面板 ===== -->
       <main class="wv-detail" id="wv-detail">
         <div class="wv-placeholder">
           <p>← 从左侧选择一个条目以查看详情</p>
@@ -51,7 +51,7 @@ for (const e of entries) {
       </main>
     </div>
 
-    <!-- Hidden pre-rendered entries -->
+    <!-- 预渲染条目的隐藏副本 -->
     <div hidden id="wv-cache">
       {entries.map((e) => (
         <div id={`wv-${e.id}`}>
@@ -85,7 +85,7 @@ for (const e of entries) {
     min-height: calc(100vh - 200px);
   }
 
-  /* ---- Sidebar ---- */
+  /* ---- 侧栏 ---- */
   .wv-sidebar {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -146,7 +146,7 @@ for (const e of entries) {
   .entry-link:hover { background: var(--bg); color: var(--text); }
   .entry-link.active { background: rgba(124,58,237,0.12); color: var(--accent); }
 
-  /* ---- Detail Panel ---- */
+  /* ---- 详情面板 ---- */
   .wv-detail {
     background: var(--surface);
     border: 1px solid var(--border); border-left: none;
@@ -205,7 +205,7 @@ for (const e of entries) {
 </style>
 
 <script>
-  // Collapsible categories
+  // 可折叠的分类
   document.querySelectorAll(".cat-toggle").forEach((btn) => {
     btn.addEventListener("click", () => {
       const items = btn.nextElementSibling as HTMLElement;
@@ -215,11 +215,11 @@ for (const e of entries) {
     });
   });
 
-  // Auto-open first
+  // 默认展开第一组
   const firstToggle = document.querySelector(".cat-toggle") as HTMLElement | null;
   if (firstToggle) firstToggle.click();
 
-  // Entry selection: swap cached HTML into detail panel
+  // 条目选择：把缓存的 HTML 换进详情面板
   const detail = document.getElementById("wv-detail")!;
 
   document.querySelectorAll(".entry-link").forEach((link) => {
@@ -235,7 +235,7 @@ for (const e of entries) {
     });
   });
 
-  // Auto-select first
+  // 默认选中第一个条目
   const firstEntry = document.querySelector(".entry-link") as HTMLElement | null;
   if (firstEntry) firstEntry.click();
 </script>

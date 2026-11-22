@@ -37,8 +37,6 @@ export interface CastResult {
   changingPositions: number[];
 }
 
-export const LINE_NAMES = ["初", "二", "三", "四", "五", "上"] as const;
-
 /** 三枚硬币的正面数 → 该爻。传统对应（「重」为三背、「交」为三字）：
  *
  *   三背（0 正） → 老阳（变爻）  1/8
@@ -91,11 +89,6 @@ const TRIGRAM_BY_BITS: Trigram[] = ["坤", "艮", "坎", "巽", "震", "离", "�
 function trigramOf(lines: Line[], offset: number): Trigram {
   const bits = [0, 1, 2].reduce((acc, i) => acc | ((lines[offset + i].yang ? 1 : 0) << i), 0);
   return TRIGRAM_BY_BITS[bits];
-}
-
-/** 由六爻推出本卦与变卦（如有变爻）。 */
-export function castHexagram(random: () => number = Math.random): CastResult {
-  return buildResult(Array.from({ length: 6 }, () => tossThreeCoins(random).line));
 }
 
 /** 给定六爻，计算本卦、变爻与变卦。 */

@@ -39,7 +39,7 @@ a:hover {
   color: var(--accent-glow);
 }
 
-/* Guarantees the `hidden` attribute wins over any later `display` rule. */
+/* 确保 `hidden` 属性不会被后续的 `display` 规则覆盖。 */
 [hidden] {
   display: none !important;
 }
@@ -54,7 +54,7 @@ h1, h2, h3 {
   color: #fff;
 }
 
-/* ---- View Transition animations ---- */
+/* ---- 视图过渡动画 ---- */
 ::view-transition-old(root) {
   animation: fade-out 0.3s ease;
 }
@@ -72,16 +72,15 @@ h1, h2, h3 {
   to { opacity: 1; }
 }
 
-/* ---- Shared utility ---- */
+/* ---- 通用工具类 ---- */
 .container {
   max-width: 760px;
   margin: 0 auto;
   padding: 0 24px;
 }
 
-/* ---- Page header ----
-   Structural, so it lives globally instead of being restated in each page's
-   scoped style block. */
+/* ---- 页面页头 ----
+   属于结构性样式，因此放在全局，而不是在每个页面的作用域样式块里重写一遍。 */
 .section {
   padding: 80px 0;
 }
@@ -96,10 +95,9 @@ h1, h2, h3 {
   margin-bottom: 48px;
 }
 
-/* ---- Buttons ----
-   Global on purpose: Astro's scoped <style> only reaches elements present in
-   the template, so buttons injected later via innerHTML would lose their
-   styling. Keeping these unscoped makes both cases identical. */
+/* ---- 按钮 ----
+   有意做成全局：Astro 的作用域 <style> 只能作用到模板里已有的元素，
+   后来经 innerHTML 注入的按钮会丢失样式。不加作用域，两种情况才一致。 */
 .btn-primary,
 .btn-secondary {
   display: inline-block;
@@ -132,7 +130,7 @@ h1, h2, h3 {
   color: var(--accent);
 }
 
-/* ---- Scrollbar ---- */
+/* ---- 滚动条 ---- */
 ::-webkit-scrollbar {
   width: 6px;
 }

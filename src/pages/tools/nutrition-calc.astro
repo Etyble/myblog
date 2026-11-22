@@ -8,7 +8,7 @@ import Layout from "../../layouts/Layout.astro";
       <h1 class="title">营养<span class="gradient-text">计算器</span></h1>
       <p class="subtitle">选食物、估分量，看看今天还差什么。</p>
 
-      <!-- ===== Top: Food Selector ===== -->
+      <!-- ===== 上部：选择食物 ===== -->
       <div class="panel panel-selector">
         <div class="filter-bar">
           <input type="text" id="search-input" class="search-input" placeholder="搜索食物..." />
@@ -25,7 +25,7 @@ import Layout from "../../layouts/Layout.astro";
         <div class="food-grid" id="food-grid"></div>
       </div>
 
-      <!-- ===== Bottom: Selected Foods ===== -->
+      <!-- ===== 下部：已选食物 ===== -->
       <div class="panel panel-cart">
         <h2>已选食物</h2>
         <div class="cart-table-wrap">
@@ -50,7 +50,7 @@ import Layout from "../../layouts/Layout.astro";
           </table>
         </div>
 
-        <!-- Totals -->
+        <!-- 合计 -->
         <div class="totals" id="totals"></div>
       </div>
 
@@ -92,7 +92,7 @@ import Layout from "../../layouts/Layout.astro";
     margin-bottom: 32px;
   }
 
-  /* ---- Panels ---- */
+  /* ---- 面板 ---- */
   .panel {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -107,7 +107,7 @@ import Layout from "../../layouts/Layout.astro";
     z-index: 5;
   }
 
-  /* ---- Filter ---- */
+  /* ---- 筛选 ---- */
   .filter-bar {
     margin-bottom: 20px;
   }
@@ -165,7 +165,7 @@ import Layout from "../../layouts/Layout.astro";
     color: var(--accent);
   }
 
-  /* ---- Food grid ---- */
+  /* ---- 食物网格 ---- */
   .food-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
@@ -219,7 +219,7 @@ import Layout from "../../layouts/Layout.astro";
     opacity: 1;
   }
 
-  /* ---- Cart table ---- */
+  /* ---- 购物车表格 ---- */
   .cart-table-wrap {
     overflow-x: auto;
     margin-bottom: 20px;
@@ -321,7 +321,7 @@ import Layout from "../../layouts/Layout.astro";
     color: #ef4444;
   }
 
-  /* ---- Totals ---- */
+  /* ---- 合计 ---- */
   .totals {
     padding-top: 16px;
     border-top: 1px solid var(--border);
@@ -361,7 +361,7 @@ import Layout from "../../layouts/Layout.astro";
     transition: width 0.4s ease, background 0.4s ease;
   }
 
-  /* Intake states: on target, over, well over. */
+  /* 摄入状态：达标、超标、严重超标。 */
   .total-bar-fill.is-over {
     background: #f59e0b;
   }
@@ -390,7 +390,7 @@ import Layout from "../../layouts/Layout.astro";
 </style>
 
 <script>
-  // ---- Food database (per 100g edible portion) ----
+  // ---- 食物数据库（按每 100g 可食部计） ----
   interface FoodItem {
     id: string;
     name: string;
@@ -401,15 +401,15 @@ import Layout from "../../layouts/Layout.astro";
     fat: number;
     carbs: number;
     fiber: number;
-    // Approx conversion for fuzzy units (grams per unit)
-    perPiece?: number;  // 个 — used for naturally countable items (fruits, eggs, buns)
-    perServing?: number; // 份 — one serving/portion (meat, fish)
+    // 模糊单位的近似换算（每个单位约合多少克）
+    perPiece?: number;  // 个——用于天然可数的食物（水果、鸡蛋、包子）
+    perServing?: number; // 份——一份的量（肉类、鱼类）
     perBowl?: number;    // 碗
     perPlate?: number;   // 盘
   }
 
   const foods: FoodItem[] = [
-    // Meat
+    // 肉类
     { id: "pork", name: "猪肉（瘦）", emoji: "🥩", cat: "meat", kcal: 143, protein: 20.3, fat: 6.2, carbs: 1.5, fiber: 0, perServing: 100 },
     { id: "beef", name: "牛肉", emoji: "🥩", cat: "meat", kcal: 125, protein: 19.9, fat: 4.2, carbs: 2.0, fiber: 0, perServing: 100 },
     { id: "chicken", name: "鸡胸肉", emoji: "🍗", cat: "meat", kcal: 133, protein: 19.4, fat: 5.0, carbs: 2.5, fiber: 0, perServing: 150 },
@@ -420,7 +420,7 @@ import Layout from "../../layouts/Layout.astro";
     { id: "egg", name: "鸡蛋", emoji: "🥚", cat: "dairy", kcal: 144, protein: 13.3, fat: 8.8, carbs: 2.8, fiber: 0, perPiece: 55 },
     { id: "sausage", name: "香肠", emoji: "🌭", cat: "meat", kcal: 508, protein: 24.1, fat: 40.7, carbs: 11.2, fiber: 0, perPiece: 50 },
 
-    // Vegetables
+    // 蔬菜
     { id: "bokchoy", name: "小白菜", emoji: "🥬", cat: "veg", kcal: 15, protein: 1.5, fat: 0.3, carbs: 2.0, fiber: 0.8, perBowl: 200, perPlate: 300 },
     { id: "spinach", name: "菠菜", emoji: "🥬", cat: "veg", kcal: 23, protein: 2.6, fat: 0.3, carbs: 4.5, fiber: 1.7, perBowl: 200, perPlate: 300 },
     { id: "tomato", name: "番茄", emoji: "🍅", cat: "veg", kcal: 19, protein: 0.9, fat: 0.2, carbs: 4.0, fiber: 0.5, perPiece: 150 },
@@ -434,7 +434,7 @@ import Layout from "../../layouts/Layout.astro";
     { id: "corn", name: "玉米", emoji: "🌽", cat: "veg", kcal: 112, protein: 4.0, fat: 1.2, carbs: 22.8, fiber: 2.9, perPiece: 300 },
     { id: "mushroom", name: "香菇", emoji: "🍄", cat: "veg", kcal: 26, protein: 2.2, fat: 0.3, carbs: 5.2, fiber: 3.3, perBowl: 150 },
 
-    // Fruits
+    // 水果
     { id: "apple", name: "苹果", emoji: "🍎", cat: "fruit", kcal: 52, protein: 0.2, fat: 0.2, carbs: 13.5, fiber: 2.4, perPiece: 200 },
     { id: "banana", name: "香蕉", emoji: "🍌", cat: "fruit", kcal: 91, protein: 1.4, fat: 0.2, carbs: 22.0, fiber: 1.2, perPiece: 120 },
     { id: "orange", name: "橙子", emoji: "🍊", cat: "fruit", kcal: 47, protein: 0.8, fat: 0.2, carbs: 11.1, fiber: 0.6, perPiece: 200 },
@@ -443,7 +443,7 @@ import Layout from "../../layouts/Layout.astro";
     { id: "strawberry", name: "草莓", emoji: "🍓", cat: "fruit", kcal: 32, protein: 0.7, fat: 0.2, carbs: 7.1, fiber: 1.1, perBowl: 200 },
     { id: "kiwi", name: "猕猴桃", emoji: "🥝", cat: "fruit", kcal: 61, protein: 0.8, fat: 0.6, carbs: 14.5, fiber: 2.6, perPiece: 80 },
 
-    // Grains
+    // 主食
     { id: "rice", name: "米饭", emoji: "🍚", cat: "grain", kcal: 116, protein: 2.6, fat: 0.3, carbs: 25.9, fiber: 0.3, perBowl: 200 },
     { id: "noodle", name: "面条（煮）", emoji: "🍜", cat: "grain", kcal: 138, protein: 3.8, fat: 0.5, carbs: 28.5, fiber: 0.5, perBowl: 300 },
     { id: "bread", name: "吐司面包", emoji: "🍞", cat: "grain", kcal: 278, protein: 8.4, fat: 3.0, carbs: 55.3, fiber: 1.4, perPiece: 40 },
@@ -451,17 +451,17 @@ import Layout from "../../layouts/Layout.astro";
     { id: "baozi", name: "包子", emoji: "🫓", cat: "grain", kcal: 223, protein: 7.3, fat: 5.2, carbs: 37.0, fiber: 1.8, perPiece: 80 },
     { id: "oatmeal", name: "燕麦片", emoji: "🥣", cat: "grain", kcal: 379, protein: 13.5, fat: 6.5, carbs: 67.7, fiber: 5.3, perBowl: 50 },
 
-    // Beans
+    // 豆制品
     { id: "tofu", name: "豆腐", emoji: "🧈", cat: "bean", kcal: 76, protein: 8.1, fat: 3.7, carbs: 4.2, fiber: 0.4, perPiece: 300 },
     { id: "soymilk", name: "豆浆", emoji: "🥛", cat: "bean", kcal: 31, protein: 3.0, fat: 1.6, carbs: 1.2, fiber: 0.4, perBowl: 300 },
     { id: "edamame", name: "毛豆", emoji: "🫘", cat: "bean", kcal: 131, protein: 13.1, fat: 5.0, carbs: 10.5, fiber: 4.0, perBowl: 200 },
 
-    // Dairy
+    // 奶蛋
     { id: "milk", name: "牛奶", emoji: "🥛", cat: "dairy", kcal: 54, protein: 3.0, fat: 3.2, carbs: 3.4, fiber: 0, perBowl: 250 },
     { id: "yogurt", name: "酸奶", emoji: "🍦", cat: "dairy", kcal: 72, protein: 2.5, fat: 2.7, carbs: 9.3, fiber: 0, perBowl: 200 },
   ];
 
-  // Daily targets (adult, moderate activity)
+  // 每日目标（成年人、中等活动量）
   const targets = {
     kcal: 2000,
     protein: 65,
@@ -470,10 +470,10 @@ import Layout from "../../layouts/Layout.astro";
     fiber: 25,
   };
 
-  // Cart state: { [foodId]: { food: FoodItem, qty: number, unit: string } }
+  // 购物车状态：{ [foodId]: { food: FoodItem, qty: number, unit: string } }
   const cart: Record<string, { food: FoodItem; qty: number; unit: string }> = {};
 
-  // ---- Render food grid ----
+  // ---- 渲染食物网格 ----
   let currentCat = "all";
   let searchQuery = "";
 
@@ -496,7 +496,7 @@ import Layout from "../../layouts/Layout.astro";
       )
       .join("");
 
-    // Click handler
+    // 点击处理
     grid.querySelectorAll(".food-item").forEach((btn) => {
       btn.addEventListener("click", () => {
         addToCart((btn as HTMLElement).dataset.id!);
@@ -504,9 +504,9 @@ import Layout from "../../layouts/Layout.astro";
     });
   }
 
-  // ---- Cart operations ----
+  // ---- 购物车操作 ----
   function addToCart(foodId: string) {
-    if (cart[foodId]) return; // already in cart
+    if (cart[foodId]) return; // 已在购物车中
     const food = foods.find((f) => f.id === foodId);
     if (!food) return;
     cart[foodId] = { food, qty: 100, unit: "g" };
@@ -532,7 +532,7 @@ import Layout from "../../layouts/Layout.astro";
     if (!entry) return;
     entry.unit = unit;
 
-    // Convert approximate units
+    // 换算近似单位
     const { food } = entry;
     if (unit === "g") {
       entry.qty = 100;
@@ -556,7 +556,7 @@ import Layout from "../../layouts/Layout.astro";
     if (entry.unit === "serving" && entry.food.perServing) return entry.qty * entry.food.perServing;
     if (entry.unit === "bowl" && entry.food.perBowl) return entry.qty * entry.food.perBowl;
     if (entry.unit === "plate" && entry.food.perPlate) return entry.qty * entry.food.perPlate;
-    return entry.qty * 100; // fallback
+    return entry.qty * 100; // 兜底值
   }
 
   function renderCart() {
@@ -597,7 +597,7 @@ import Layout from "../../layouts/Layout.astro";
       })
       .join("");
 
-    // Bind events
+    // 绑定事件
     tbody.querySelectorAll(".qty-input").forEach((input) => {
       input.addEventListener("input", () => {
         const el = input as HTMLInputElement;
@@ -651,9 +651,8 @@ import Layout from "../../layouts/Layout.astro";
         .map((n) => {
           const rawPct = (n.value / n.target) * 100;
           const pct = Math.min(100, rawPct);
-          // State drives the colour via a class; only the computed width stays
-          // inline. Uses the *unclamped* ratio — clamping first would make the
-          // amber/red states unreachable.
+          // 颜色状态用 class 表达，只有计算出的宽度保持内联。
+          // 判断用的是**未截断**的比例——先截断会让琥珀色/红色状态永远不可达。
           const stateClass =
             rawPct > 110 ? " is-danger" : rawPct > 95 ? " is-over" : "";
 
@@ -669,7 +668,7 @@ import Layout from "../../layouts/Layout.astro";
       '</div>';
   }
 
-  // ---- Filter & search ----
+  // ---- 筛选与搜索 ----
   document.getElementById("category-tabs")!.addEventListener("click", (e) => {
     const btn = (e.target as HTMLElement).closest(".cat-tab");
     if (!btn) return;
@@ -689,6 +688,6 @@ import Layout from "../../layouts/Layout.astro";
     }, 200);
   });
 
-  // ---- Init ----
+  // ---- 初始化 ----
   renderFoodGrid();
 </script>

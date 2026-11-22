@@ -2,17 +2,20 @@ import { defineCollection } from "astro:content";
 import { z } from "astro/zod";
 
 /**
- * Hand-written content loaders.
+ * 手写的内容加载器。
  *
- * Why not `glob()` from `astro/loaders`: the official glob loader imports
- * `picomatch`, a CommonJS package. `astro sync` runs loaders through Vite's
- * module runner, where picomatch's `require()` is evaluated in an ESM context
- * and throws `require is not defined`, so every collection ends up empty.
+ * 为什么不用 `astro/loaders` 的 `glob()`：官方加载器会 import `picomatch`，
+ * 而它是个 CommonJS 包。`astro sync` 通过 Vite 的模块运行器执行加载器，
+ * picomatch 的 `require()` 在 ESM 环境里求值，直接抛 `require is not defined`，
+ * 结果每个集合都变成空的。
  *
- * These loaders use only `node:` builtins, so they never reach that code path.
+ * 本文件只用 `node:` 内置模块，不会走到那条代码路径。
+ *
+ * 复查条件：上述失败在 astro 7.3.2 与当时安装的 Vite 8 下复现过。若日后升级
+ * 修复了该问题，应改回官方 `glob()` 并删除本实现。
  */
 
-/** Unquotes a YAML scalar and infers booleans/numbers from bare values. */
+/** 去掉 YAML 标量的引号，并从裸值推断布尔与数字。 */
 function scalar(value: string): unknown {
   const trimmed = value.trim();
   const quoted =
@@ -26,8 +29,8 @@ function scalar(value: string): unknown {
 }
 
 /**
- * Parses the frontmatter block and returns `{ data, body }`.
- * Handles the scalar and inline-array forms used by this project's content.
+ * 解析 frontmatter 块，返回 `{ data, body }`。
+ * 只处理本项目内容用到的标量与内联数组形式。
  */
 function parseFrontmatter(raw: string): {
   data: Record<string, unknown>;
@@ -68,7 +71,7 @@ const syncByDir = new Map<string, () => Promise<void>>();
 /** 已经挂过监听的目录，避免重复 sync 时反复注册事件。 */
 const watchedDirs = new Set<string>();
 
-/** Builds a loader that reads every .md file under `base` recursively. */
+/** 构造一个加载器：递归读取 `base` 下的所有 .md 文件。 */
 function markdownDir(base: string) {
   return {
     name: `markdown-dir:${base}`,
@@ -85,10 +88,8 @@ function markdownDir(base: string) {
       const { join, relative, sep } = await import("node:path");
       const { fileURLToPath, pathToFileURL } = await import("node:url");
 
-      // Resolve against the project root rather than the process cwd — the dev
-      // server and the build runner do not necessarily share a cwd. Using a
-      // relative path here silently yields an empty collection, so verify the
-      // directory is actually there.
+      // 基于项目根目录解析，而不是依赖进程 cwd——dev 与构建运行器的 cwd 未必一致。
+      // 用相对路径时集合会悄悄变空，所以先确认目录确实存在。
       const root = fileURLToPath(config.root);
       const dir = join(root, base);
       const toPosix = (value: string) => value.split(sep).join("/");
@@ -115,10 +116,10 @@ function markdownDir(base: string) {
         const raw = await readFile(file, "utf-8");
         const { data, body } = parseFrontmatter(raw);
         const id = toPosix(relative(dir, file)).replace(/\.md$/, "");
-        // Astro resolves the entry's source relative to the project root.
+        // Astro 以项目根目录为基准解析条目的源文件路径。
         const filePath = toPosix(relative(root, file));
 
-        // YAML dates arrive as strings; the collection schemas expect Date.
+        // YAML 里的日期是字符串，而集合 schema 要求 Date。
         for (const [key, value] of Object.entries(data)) {
           if (/date$/i.test(key) && typeof value === "string" && value !== "") {
             const asDate = new Date(value);
@@ -128,8 +129,8 @@ function markdownDir(base: string) {
 
         const parsed = await parseData({ id, data, filePath });
 
-        // Render up front: Astro 7 removed `entry.render()`, and the standalone
-        // `render(entry)` reads this `rendered` field.
+        // 提前渲染：Astro 7 移除了 `entry.render()`，独立的
+        // `render(entry)` 读的就是这个 `rendered` 字段。
         const rendered = await renderMarkdown(body, {
           fileURL: pathToFileURL(file),
         });

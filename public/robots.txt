@@ -1,5 +1,5 @@
 User-agent: *
 Disallow: /
 
-# Deliberately unindexed — this is a personal site. The noindex meta tag in
-# src/layouts/Layout.astro enforces the same thing per page.
+# 有意不收录——这是个人站。src/layouts/Layout.astro 里的 noindex meta 标签
+# 在每个页面上做同样的事。

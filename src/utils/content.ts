@@ -1,9 +1,8 @@
 /**
- * Shared content-collection queries.
+ * 内容集合的公共查询。
  *
- * Every list page used to inline the same `getCollection(...)` + `!draft` filter
- * + date sort. Centralising it also gives the sort a single definition of
- * "newest first" that cannot drift between pages.
+ * 此前每个列表页都各自写一遍 `getCollection(...)` + `!draft` 过滤 + 按日期排序；
+ * 集中到这里后，「最新在前」只有一处定义，不会在各页面之间跑偏。
  */
 import { getCollection, type CollectionEntry } from "astro:content";
 
@@ -12,7 +11,7 @@ type PostCollection = "blog" | "writings";
 const byDateDesc = <T extends { data: { date: Date } }>(a: T, b: T) =>
   b.data.date.getTime() - a.data.date.getTime();
 
-/** Published entries of one collection, newest first. */
+/** 单个集合中已发布的条目，最新在前。 */
 export async function publishedPosts(
   collection: PostCollection,
 ): Promise<CollectionEntry<PostCollection>[]> {
@@ -20,7 +19,7 @@ export async function publishedPosts(
   return entries.sort(byDateDesc);
 }
 
-/** Published blog + writings entries merged, newest first. */
+/** 博客与碎碎念的已发布条目合并后，最新在前。 */
 export async function latestPosts(
   limit?: number,
 ): Promise<(CollectionEntry<PostCollection> & { type: PostCollection })[]> {

@@ -6,11 +6,10 @@
  *   - facet 分 = 该面向 4 道题转换后之和（范围 4–20）
  *   - domain 分 = 该维度 6 个 facet 之和（范围 24–120）
  *
- * 百分位是「相对 src/data/self-norms.ts 里录入的本人基准」，
- * 未录入基准时为 null。
+ * 百分位相对「本人基准」换算：默认取 src/data/self-norms.ts 的录入值，
+ * 也可通过 score() 的参数传入；基准为 null 时百分位为 null。
  */
 import {
-  CHOICES,
   DOMAINS,
   FACETS,
   QUESTIONS,
@@ -18,7 +17,7 @@ import {
   type DomainCode,
   type Facet,
 } from "../data/ipip-neo.ts";
-import { hasBaseline, type BaselineScores } from "../data/self-norms.ts";
+import { SELF_NORMS, type BaselineScores } from "../data/self-norms.ts";
 import { levelFor, relativePercentile } from "./percentile.ts";
 
 /** 每题的回答：选项 id（1–5）。未作答为 undefined。 */
@@ -57,22 +56,11 @@ export interface ScoreReport {
   hasBaseline: boolean;
 }
 
-/** 选项 id 的合法范围，用于校验。 */
-export const CHOICE_IDS = CHOICES.map((c) => c.id);
 export const TOTAL_QUESTIONS = QUESTIONS.length;
 
 /** 反向计分：按 rules.reverseFormula 的 "6 - rawScore"。 */
 export function reverseScore(raw: number): number {
   return 6 - raw;
-}
-
-/** 单题得分（已处理反向题）。 */
-export function itemScore(questionId: number, answers: Answers): number | null {
-  const raw = answers[questionId];
-  if (raw === undefined) return null;
-  const question = QUESTIONS.find((q) => q.id === questionId);
-  if (!question) return null;
-  return question.reverse ? reverseScore(raw) : raw;
 }
 
 /** 已作答数量。 */
@@ -127,17 +115,23 @@ function deltaFrom(percentile: number): number {
   return Math.round((percentile - 50) / 2);
 }
 
-/** 计算完整报告。缺答的题按 0 分计（调用方应先用 unansweredIds 拦截）。 */
-export function score(answers: Answers): ScoreReport {
+/**
+ * 计算完整报告。缺答的题按 0 分计（调用方应先用 unansweredIds 拦截）。
+ * 换算基准默认取已录入的个人基准，也可显式传入以复用或测试。
+ */
+export function score(
+  answers: Answers,
+  baseline: BaselineScores | null = SELF_NORMS.baseline,
+): ScoreReport {
   const { facets: facetRaw, domains: domainRaw } = computeRaw(answers);
 
   const domains: DomainScore[] = DOMAINS.map((domain) => {
     const raw = domainRaw[domain.code];
-    const percentile = relativePercentile(raw, domain.code, "domain");
+    const percentile = relativePercentile(raw, domain.code, "domain", baseline);
 
     const facets: FacetScore[] = FACETS.filter((f) => f.domain === domain.code).map((facet) => {
       const fRaw = facetRaw[facet.code] ?? 0;
-      const fPct = relativePercentile(fRaw, facet.code, "facet");
+      const fPct = relativePercentile(fRaw, facet.code, "facet", baseline);
       return {
         facet,
         raw: fRaw,
@@ -165,7 +159,7 @@ export function score(answers: Answers): ScoreReport {
     domains,
     answered: answeredCount(answers),
     total: QUESTIONS.length,
-    hasBaseline: hasBaseline(),
+    hasBaseline: baseline !== null,
   };
 }
 
