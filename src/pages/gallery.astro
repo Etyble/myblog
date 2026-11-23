@@ -1,0 +1,288 @@
+---
+import { Image } from "astro:assets";
+import { statSync } from "node:fs";
+import { join } from "node:path";
+import type { ImageMetadata } from "astro";
+import Layout from "../layouts/Layout.astro";
+
+/**
+ * 自动扫描图片目录：把图片放进 src/assets/gallery/ 就会出现在这里，
+ * 新增或删除都无需改代码。构建时由 astro:assets 生成缩略图。
+ */
+const modules = import.meta.glob<ImageMetadata>(
+  "../assets/gallery/**/*.{jpg,jpeg,png,webp,avif}",
+  { eager: true, import: "default" },
+);
+
+/** 图片目录，相对项目根；用于读取文件的修改时间。 */
+const GALLERY_DIR = "src/assets/gallery";
+
+/** 文件修改时间；读不到时返回 0，排序会退回到按文件名。 */
+function modifiedAt(fileName: string): number {
+  try {
+    return statSync(join(process.cwd(), GALLERY_DIR, fileName)).mtimeMs;
+  } catch {
+    return 0;
+  }
+}
+
+const photos = Object.entries(modules)
+  .map(([path, image]) => {
+    const file = path.split("/").pop() ?? path;
+    return {
+      path,
+      name: file.replace(/\.[^.]+$/, ""),
+      image,
+      modifiedAt: modifiedAt(file),
+    };
+  })
+  // 最新的在前；时间相同时按文件名倒序，这样带日期前缀的命名依然有效。
+  .sort((a, b) => b.modifiedAt - a.modifiedAt || b.name.localeCompare(a.name));
+---
+
+<Layout title="画廊 — MyWorld" description="一些图片。点开看完整尺寸。">
+  <section class="section">
+    <div class="container">
+      <h1 class="page-title">画廊</h1>
+      <p class="page-desc">画画画。</p>
+
+      {
+        photos.length === 0 ? (
+          <p class="empty">
+            画廊还没有图片。把图片放进 <code>src/assets/gallery/</code> 就会自动出现。
+          </p>
+        ) : (
+          <div class="gallery-grid">
+            {photos.map((photo) => (
+              <button
+                type="button"
+                class="gallery-item"
+                data-full={photo.image.src}
+                data-name={photo.name}
+                data-width={photo.image.width}
+                data-height={photo.image.height}
+                aria-label={`查看 ${photo.name}`}
+              >
+                <Image
+                  src={photo.image}
+                  widths={[240, 400, 640]}
+                  sizes="(max-width: 640px) 45vw, 220px"
+                  alt={photo.name}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </button>
+            ))}
+          </div>
+        )
+      }
+    </div>
+  </section>
+
+  <dialog id="lightbox" class="lightbox">
+    <button type="button" class="lightbox-close" id="lightbox-close" aria-label="关闭">×</button>
+    <div class="lightbox-spinner" aria-hidden="true"></div>
+    <img id="lightbox-img" alt="" />
+    <p class="lightbox-name" id="lightbox-name"></p>
+  </dialog>
+</Layout>
+
+<style>
+  .empty {
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .empty code {
+    font-family: monospace;
+    color: var(--accent);
+  }
+
+  /* 固定宽高比：不同尺寸的原图在这里裁切成同一形状，
+     缩略图只负责「认出是哪张」，完整画面在灯箱里看。 */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+  }
+
+  .gallery-item {
+    display: block;
+    padding: 0;
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    cursor: zoom-in;
+  }
+
+  .gallery-item img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.35s ease;
+  }
+
+  .gallery-item:hover img {
+    transform: scale(1.04);
+  }
+
+  /* 全局样式里的 `* { margin: 0 }` 会覆盖浏览器给对话框的 `margin: auto`，
+     而模态对话框正是靠它居中的，所以这里必须显式写回来。 */
+  .lightbox {
+    margin: auto;
+    max-width: 92vw;
+    max-height: 92vh;
+    padding: 0;
+    border: none;
+    background: transparent;
+  }
+
+  .lightbox::backdrop {
+    background: rgba(0, 0, 0, 0.86);
+  }
+
+  .lightbox img {
+    display: block;
+    max-width: 92vw;
+    max-height: 84vh;
+    object-fit: contain;
+    border-radius: 8px;
+  }
+
+  /* 加载中：图片先占好位置但不显示，避免「空盒子 → 突然撑开」的跳变。 */
+  .lightbox.loading img {
+    visibility: hidden;
+  }
+
+  .lightbox-spinner {
+    display: none;
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 36px;
+    height: 36px;
+    border: 3px solid rgba(255, 255, 255, 0.25);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: lightbox-spin 0.8s linear infinite;
+  }
+
+  .lightbox.loading .lightbox-spinner {
+    display: block;
+  }
+
+  @keyframes lightbox-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .lightbox-name {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: #c9c9d4;
+    text-align: center;
+  }
+
+  .lightbox-close {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    font-size: 1.4rem;
+    line-height: 1;
+    color: #e8e8ed;
+    background: rgba(255, 255, 255, 0.12);
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+
+  .lightbox-close:hover {
+    background: rgba(255, 255, 255, 0.22);
+  }
+
+  @media (max-width: 640px) {
+    .gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+    }
+  }
+</style>
+
+<script>
+  const lightbox = document.getElementById("lightbox") as HTMLDialogElement;
+  const lightboxImage = document.getElementById("lightbox-img") as HTMLImageElement;
+  const lightboxName = document.getElementById("lightbox-name") as HTMLElement;
+
+  /** 连点不同图片时，用序号丢弃过期的加载回调。 */
+  let loadToken = 0;
+
+  function openLightbox(item: HTMLButtonElement): void {
+    const token = ++loadToken;
+    const name = item.dataset.name ?? "";
+    const naturalWidth = Number(item.dataset.width) || 0;
+    const naturalHeight = Number(item.dataset.height) || 0;
+
+    // 先按原图比例算出显示尺寸并占好位置，图片解码完成前只露出转圈，
+    // 这样对话框不会先是个空盒子、再被图片突然撑开。
+    const scale =
+      naturalWidth && naturalHeight
+        ? Math.min(
+            1,
+            (window.innerWidth * 0.92) / naturalWidth,
+            (window.innerHeight * 0.84) / naturalHeight,
+          )
+        : 1;
+    lightboxImage.style.width = naturalWidth ? `${Math.round(naturalWidth * scale)}px` : "";
+    lightboxImage.style.height = naturalHeight ? `${Math.round(naturalHeight * scale)}px` : "";
+    lightboxImage.removeAttribute("src");
+    lightboxImage.alt = name;
+    lightboxName.textContent = name;
+    lightbox.classList.add("loading");
+    lightbox.showModal();
+
+    const src = item.dataset.full;
+    if (!src) {
+      lightbox.classList.remove("loading");
+      return;
+    }
+
+    const finish = () => {
+      if (token === loadToken) lightbox.classList.remove("loading");
+    };
+
+    lightboxImage.addEventListener("error", finish, { once: true });
+    lightboxImage.src = src;
+
+    // decode() 等解码完成再显示，避免图片逐行绘制时的闪烁。
+    if (typeof lightboxImage.decode === "function") {
+      lightboxImage.decode().then(finish, finish);
+    } else {
+      lightboxImage.addEventListener("load", finish, { once: true });
+    }
+  }
+
+  document.querySelectorAll<HTMLButtonElement>(".gallery-item").forEach((item) => {
+    item.addEventListener("click", () => openLightbox(item));
+  });
+
+  document.getElementById("lightbox-close")?.addEventListener("click", () => lightbox.close());
+
+  // 点遮罩关闭；点在图片上时 target 是 img，不会误关。
+  lightbox.addEventListener("click", (event) => {
+    if (event.target === lightbox) lightbox.close();
+  });
+
+  // 关闭后复位，下次打开重新走一次加载态。
+  lightbox.addEventListener("close", () => {
+    loadToken++;
+    lightbox.classList.remove("loading");
+    lightboxImage.removeAttribute("src");
+  });
+</script>

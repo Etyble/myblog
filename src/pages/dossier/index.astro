@@ -1,0 +1,26 @@
+---
+import PostList from "../../components/PostList.astro";
+import Layout from "../../layouts/Layout.astro";
+import { publishedPosts } from "../../utils/content";
+
+const dossiers = await publishedPosts("dossier");
+---
+
+<Layout title="档案袋 — MyWorld" description="杂项文档：笔记、清单、资料摘录。">
+  <section class="section">
+    <div class="container">
+      <h1 class="page-title">档案袋</h1>
+      <div class="page-intro">
+        <p>杂乱的文字。</p>
+      </div>
+      <PostList posts={dossiers} section="dossier" empty="档案袋还是空的。" />
+    </div>
+  </section>
+</Layout>
+
+<style>
+  .page-intro {
+    color: var(--text-muted);
+    margin-bottom: 48px;
+  }
+</style>

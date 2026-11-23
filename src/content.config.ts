@@ -223,24 +223,27 @@ function markdownDir(base: string) {
   };
 }
 
+/** 文章型集合（博客、碎碎念、档案袋）共用的 schema。 */
+const postSchema = z.object({
+  title: z.string(),
+  date: z.date(),
+  description: z.string().optional(),
+  draft: z.boolean().default(false),
+});
+
 const blog = defineCollection({
   loader: markdownDir("./src/content/blog"),
-  schema: z.object({
-    title: z.string(),
-    date: z.date(),
-    description: z.string().optional(),
-    draft: z.boolean().default(false),
-  }),
+  schema: postSchema,
 });
 
 const writings = defineCollection({
   loader: markdownDir("./src/content/writings"),
-  schema: z.object({
-    title: z.string(),
-    date: z.date(),
-    description: z.string().optional(),
-    draft: z.boolean().default(false),
-  }),
+  schema: postSchema,
+});
+
+const dossier = defineCollection({
+  loader: markdownDir("./src/content/dossier"),
+  schema: postSchema,
 });
 
 const worldview = defineCollection({
@@ -255,4 +258,4 @@ const worldview = defineCollection({
   }),
 });
 
-export const collections = { blog, writings, worldview };
+export const collections = { blog, writings, dossier, worldview };

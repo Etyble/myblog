@@ -6,7 +6,7 @@ type Props = {
   /** 要渲染的已发布条目，最新在前。 */
   posts: { id: string; data: { date: Date; title: string; description?: string } }[];
   /** 用于拼出文章 URL 的集合路径段。 */
-  section: "blog" | "writings";
+  section: "blog" | "writings" | "dossier";
   /** 没有内容时显示的文案。 */
   empty: string;
 }
