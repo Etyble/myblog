@@ -20,6 +20,10 @@ const home = withBase("/");
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- 标记脚本可用：窄屏下导航默认收起，脚本失效时仍保持可访问。 -->
+    <script is:inline>
+      document.documentElement.classList.add("js");
+    </script>
     <link rel="icon" type="image/svg+xml" href={withBase("/icon.svg")} />
     <meta name="description" content={description} />
     <!-- 有意为之：本站不打算被搜索引擎收录。若以后想让文章被收录，
@@ -37,7 +41,16 @@ const home = withBase("/");
     <header class="nav">
       <div class="container nav-inner">
         <a href={home} class="logo">Etyble's Blog</a>
-        <nav>
+        <button
+          type="button"
+          class="nav-toggle"
+          aria-label="展开导航"
+          aria-expanded="false"
+          aria-controls="site-nav"
+        >
+          ☰
+        </button>
+        <nav id="site-nav">
           <a href={home}>主页</a>
           <a href={withBase("/blog")}>博客</a>
           <a href={withBase("/writings")}>碎碎念</a>
@@ -91,6 +104,10 @@ const home = withBase("/");
     gap: 24px;
   }
 
+  .nav-toggle {
+    display: none;
+  }
+
   nav a {
     font-size: 0.9rem;
     font-weight: 500;
@@ -118,8 +135,7 @@ const home = withBase("/");
     .nav-inner {
       flex-wrap: wrap;
       height: auto;
-      /* 保留左右内边距：写成 `10px 0` 会把 .container 的 24px 留白清掉，
-         导致 logo 贴边。 */
+      /* 保留左右内边距：写成 `10px 0` 会把 .container 的 24px 留白清掉。 */
       padding: 10px 24px;
       gap: 8px;
     }
@@ -128,20 +144,108 @@ const home = withBase("/");
       font-size: 1rem;
     }
 
-    nav {
-      /* 不要写 width: 100%：那会让父级的 space-between 失效、链接贴左。
-         margin-left: auto 保证换行后整块仍然靠右。 */
+    .nav-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
       margin-left: auto;
-      justify-content: flex-end;
-      gap: 10px 14px;
-      flex-wrap: wrap;
-      padding-bottom: 2px;
+      padding: 0;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 1.1rem;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .nav-toggle:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* 脚本可用时，导航改为贴在按钮下方的紧凑浮层：
+       宽度随内容收缩，不再铺满整行，也不会推挤页面内容。
+       展开收起用透明度与位移过渡（display 切换无法过渡）。
+       脚本失效时保持原来的换行布局，链接仍然可点。 */
+    .js nav {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 24px;
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 2px;
+      width: max-content;
+      min-width: 9rem;
+      max-width: calc(100vw - 48px);
+      padding: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      opacity: 0;
+      transform: translateY(-6px);
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.18s ease, transform 0.18s ease, visibility 0.18s;
+    }
+
+    .js nav[data-open] {
+      opacity: 1;
+      transform: translateY(0);
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .js nav a {
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      text-align: left;
+    }
+
+    .js nav a:hover {
+      background: rgba(255, 255, 255, 0.06);
     }
 
     nav a {
-      font-size: 0.78rem;
-      white-space: nowrap;
-      flex-shrink: 0;
+      font-size: 0.9rem;
     }
   }
 </style>
+
+<script>
+  const navToggle = document.querySelector<HTMLButtonElement>(".nav-toggle");
+  const siteNav = document.getElementById("site-nav");
+
+  if (navToggle && siteNav) {
+    const setNavOpen = (open: boolean) => {
+      siteNav.toggleAttribute("data-open", open);
+      navToggle.setAttribute("aria-expanded", String(open));
+      navToggle.textContent = open ? "×" : "☰";
+    };
+
+    navToggle.addEventListener("click", () => {
+      setNavOpen(!siteNav.hasAttribute("data-open"));
+    });
+
+    // 点了链接就收起，避免跳转后菜单仍然展开。
+    siteNav.addEventListener("click", (event) => {
+      if ((event.target as HTMLElement).closest("a")) setNavOpen(false);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && siteNav.hasAttribute("data-open")) setNavOpen(false);
+    });
+
+    // 点菜单和按钮以外的地方收起，符合下拉菜单的预期。
+    document.addEventListener("click", (event) => {
+      if (!siteNav.hasAttribute("data-open")) return;
+      const target = event.target as HTMLElement;
+      if (!target.closest("#site-nav") && !target.closest(".nav-toggle")) setNavOpen(false);
+    });
+  }
+</script>
